@@ -1,4 +1,5 @@
 #include <iostream>
+#include "lexer.h"
 
 int main(int argc, char *argv[]){
 
@@ -9,9 +10,9 @@ int main(int argc, char *argv[]){
 
     }
 
-    char *file = argv[1];
+    const char *file = argv[1];
 
-    std::cout << file << std::endl;
+    lexer l = lexer(file);
 
 	return 0;
 

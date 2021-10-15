@@ -5,8 +5,11 @@
 struct token{
 
     enum token_type{
-        TOKEN_L_PAREN,
-        TOKEN_R_PAREN,
+        TOKEN_IDENTIFIER,
+        TOKEN_NUMBER,
+        TOKEN_OPERATOR,
+        TOKEN_SEPERATOR,
+        TOKEN_LITERAL,
         TOKEN_EOF,
     } type;
 
@@ -15,6 +18,5 @@ struct token{
     token(token_type _t, std::string _value);
 
 };
-
 
 #endif
