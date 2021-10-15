@@ -15,8 +15,8 @@ lexer::lexer(const char *file){
 
             current_char = src_code.get();
 
-            std::cout << current_char << std::endl;
-            
+            charVec->push_back(current_char);
+
             if (current_char == EOF) break;
 
         }
@@ -29,5 +29,12 @@ lexer::lexer(const char *file){
 
 token lexer::advance(){
 
+    return token(token::TOKEN_EOF, "EOF");
+
+}
+
+lexer::~lexer(){
+
+    delete(charVec);
 
 }
