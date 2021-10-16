@@ -14,6 +14,14 @@ int main(int argc, char *argv[]){
 
     lexer l = lexer(file);
 
+    //std::cout << l.c << isalpha(l.c) << std::endl;
+
+    token token1 = l.advance();
+    token token2 = l.advance();
+    std::cout << token1.type << " " << token1.value << std::endl;
+    std::cout << token2.type << " " << token2.value << std::endl;
+
+
     //std::cout << l.advance().type << std::endl;
 
     // for (auto i = l.charVec->begin(); i != l.charVec->end(); ++i){

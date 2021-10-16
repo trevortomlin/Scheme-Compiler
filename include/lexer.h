@@ -19,12 +19,12 @@ class lexer{
 
     private:
 
-        static bool lexer::isPunctuator(char c);
-        static bool lexer::isLiteral(char c);
+        static bool isPunctuator(char c);
+        static bool isLiteral(char c);
 
-        std::string lexer::parse_identifier(int pos);
-        std::string lexer::parse_number(int pos);
-        std::string lexer::parse_literal(int pos);
+        std::string parse_identifier(int &pos);
+        std::string parse_number(int pos);
+        std::string parse_literal(int pos);
 };
 
 #endif
