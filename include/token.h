@@ -8,7 +8,7 @@ struct token{
         TOKEN_IDENTIFIER,
         TOKEN_NUMBER,
         TOKEN_OPERATOR,
-        TOKEN_SEPERATOR,
+        TOKEN_PUNCTUATOR,
         TOKEN_LITERAL,
         TOKEN_EOF,
     } type;

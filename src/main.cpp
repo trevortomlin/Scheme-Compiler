@@ -14,6 +14,17 @@ int main(int argc, char *argv[]){
 
     lexer l = lexer(file);
 
+    //std::cout << l.advance().type << std::endl;
+
+    // for (auto i = l.charVec->begin(); i != l.charVec->end(); ++i){
+
+    //     std::cout << *i << std::endl;
+
+    // }
+
+    // std::cout << l.c << std::endl;
+    
+
 	return 0;
 
 }
