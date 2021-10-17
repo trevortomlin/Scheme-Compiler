@@ -24,12 +24,14 @@ class lexer{
         static bool isDelimiter(char c);
         static bool isIdentifier(char c);
 
+        void skipComment(int &pos);
+
         std::string parseCharacter(int &pos);
         std::string parseIdentifier(int &pos);
         std::string parseNumber(int &pos);
         std::string parseLiteral(int &pos);
         std::string parseString(int &pos);
         std::string parseEscapeSequence(int &pos);
-};
+}; 
 
 #endif

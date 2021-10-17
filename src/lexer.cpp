@@ -48,10 +48,16 @@ token lexer::advance(){
 
                 if (isIdentifier(c)) {state = 1; break;}
                 else if (isspace(c)) {pos++; break;}
-                else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
-                else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
+                else if (isdigit(c)){state = 4; break;}
+                else if (c == ';') {skipComment(pos); break;}
                 else if (c == '"') {state = 2; break;}
                 else if (c == '#') {state = 3; break;}
+                else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
+                else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
+                else if (c == '\'') {pos++; return token(token::TOKEN_SINGLE_QUOTE, std::string(1, c));}
+                else if (c == ',') {state = 5; break;}
+                else if (c == '.') {pos++; return token(token::TOKEN_PERIOD, std::string(1, c));}
+                else if (c == '`') {pos++; return token(token::TOKEN_BACK_QUOTE, std::string(1, c));}
 
                 break;
             }
@@ -89,6 +95,23 @@ token lexer::advance(){
                 break;
 
             }
+
+            // Number State
+            case 4: {
+
+
+
+            }
+
+            // Comma State
+            case 5: {
+            
+            char next_char = charVec->at(pos+1);
+
+            if (next_char == '@'){pos +=2; return token(token::TOKEN_COMMA_AT, std::string(1, c) + std::string(1, next_char));}
+            else {pos +=2; return token(token::TOKEN_COMMA, std::string(1, c));}
+            
+            }
         }
     
     }
@@ -117,6 +140,18 @@ token lexer::advance(){
     // //return(token(token::TOKEN_PUNCTUATOR, std::string(1, c));
     // pos++;
     return token(token::TOKEN_EOF, "EOF");
+
+}
+
+void lexer::skipComment(int &pos){
+
+    pos++;
+
+    while (charVec->at(pos) != '\n'){
+
+        pos++;
+
+    }
 
 }
 
@@ -179,6 +214,8 @@ std::string lexer::parseString(int &pos){
         current_char = charVec->at(pos);
 
     }
+
+    pos++;
 
     return str;
 
