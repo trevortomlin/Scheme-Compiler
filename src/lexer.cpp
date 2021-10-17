@@ -49,6 +49,7 @@ token lexer::advance(){
                 if (isIdentifier(c)) {state = 1; break;}
                 else if (isspace(c)) {pos++; break;}
                 else if (isdigit(c)){state = 4; break;}
+                else if (c == '.' || c == '+' || c == '...' || c == '-'){state = 6; break;}
                 else if (c == ';') {skipComment(pos); break;}
                 else if (c == '"') {state = 2; break;}
                 else if (c == '#') {state = 3; break;}
@@ -56,7 +57,7 @@ token lexer::advance(){
                 else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
                 else if (c == '\'') {pos++; return token(token::TOKEN_SINGLE_QUOTE, std::string(1, c));}
                 else if (c == ',') {state = 5; break;}
-                else if (c == '.') {pos++; return token(token::TOKEN_PERIOD, std::string(1, c));}
+                //else if (c == '.') {pos++; return token(token::TOKEN_PERIOD, std::string(1, c));}
                 else if (c == '`') {pos++; return token(token::TOKEN_BACK_QUOTE, std::string(1, c));}
 
                 break;
@@ -106,11 +107,55 @@ token lexer::advance(){
             // Comma State
             case 5: {
             
-            char next_char = charVec->at(pos+1);
+                char next_char = charVec->at(pos+1);
 
-            if (next_char == '@'){pos +=2; return token(token::TOKEN_COMMA_AT, std::string(1, c) + std::string(1, next_char));}
-            else {pos +=2; return token(token::TOKEN_COMMA, std::string(1, c));}
+                if (next_char == '@'){pos +=2; return token(token::TOKEN_COMMA_AT, std::string(1, c) + std::string(1, next_char));}
+                else {pos +=2; return token(token::TOKEN_COMMA, std::string(1, c));}
             
+            }
+
+            // Case Delimited op
+            case 6: {
+
+                char next_char = charVec->at(pos + 1);
+
+                if (c == '.'){
+
+                    if (isDelimiter(next_char) && next_char != '.'){pos++; return token(token::TOKEN_PERIOD, std::string(1, c));}
+                    else if (charVec->at(pos + 2) == '.'){
+                        pos+=3;
+                        return token(token::TOKEN_IDENTIFIER, "...");     
+
+                    }
+
+                }
+
+
+                // if (c == '.' && isDelimiter(next_char)){
+                //     pos++; 
+                //     return token(token::TOKEN_PERIOD, std::string(1, c));
+                // }
+                // // Fix this. It is ugly.
+                // // else if ((c == '.') && (next_char == '.') && (char_2nd == '.') && (isDelimiter(char_3rd))){
+                // //     pos += 3; 
+                // //     return token(token::TOKEN_IDENTIFIER, "...");}
+
+                // bool ellipse = true;
+                
+                // for (int i = 1; i <= 3; ++i){
+
+                //     char ahead = charVec->at(pos + i);
+                //     ellipse &= (ahead == '.');
+                // }   
+
+                // if (ellipse){return token(token::TOKEN_IDENTIFIER, "...";}
+
+                if (next_char = ' ') {pos++; return token(token::TOKEN_IDENTIFIER, std::string(1, c));}
+
+                else {state = 4;}
+
+                break;
+
             }
         }
     
@@ -179,6 +224,7 @@ bool lexer::isPunctuator(char c){
 bool lexer::isDelimiter(char c){
 
     std::string delimiters = " \n()\";";
+    return (delimiters.find(c) != std::string::npos);
 
 }
 
@@ -253,7 +299,7 @@ std::string lexer::parseEscapeSequence(int &pos){
 std::string lexer::parseIdentifier(int &pos){
 
     int offset = 0;
-    const std::string extendedCharacter = "+-.*/<=>!?:$%_&~^";
+    const std::string extendedCharacter = "_+-.*/<=>!?:$%_&~^";
 
     std::string id;
 
@@ -263,7 +309,7 @@ std::string lexer::parseIdentifier(int &pos){
 
     //char current_char = charVec->at(pos + offset);
 
-    while (isalnum(current_char) || current_char == '_' || extendedCharacter.find(current_char) != std::string::npos){
+    while (isalnum(current_char) || extendedCharacter.find(current_char) != std::string::npos){
 
         id += current_char;
         offset++;
