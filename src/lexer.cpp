@@ -38,26 +38,40 @@ token lexer::advance(){
 
     int state = 0;
 
-    std::cout << c << std::endl;
+    //std::cout << c << std::endl;
 
-    switch (state){
+    while(c != EOF){
 
-        case 0:
+        switch (state){
 
-            if (isIdentifier(c)) {state = 1; break;}
-            else if (isspace(c)) {pos++; break;}
-            else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
-            else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
+            case 0: {
 
-            break;
-        // Identifier State
-        case 1:
+                if (isIdentifier(c)) {state = 1; break;}
+                else if (isspace(c)) {pos++; break;}
+                else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
+                else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
+                else if (c == '"') {state = 2; break;}
 
-            break;
+                break;
+            }
+            // Identifier State
+            case 1: {
 
-    }
+                std::string id = parseIdentifier(pos);
+                return token(token::TOKEN_IDENTIFIER, id);
+                break;
+            }
+            // String Case
+            case 2:{
+                
+                std::string str = parseString(pos);
+                return token(token::TOKEN_STRING, str);
+                break;
+
+            }
+        }
     
-
+    }
     //std::cout << c << std::endl;
 
     // if (isspace(c)){
@@ -93,8 +107,8 @@ lexer::~lexer(){
 }
  
 bool lexer::isIdentifier(char c){
-
-    return false;
+    const std::string specialInitial = "!$%&*/:<=>?^_~";
+    return isalpha(c) || specialInitial.find(c) != std::string::npos;
 
 }
 
@@ -111,26 +125,80 @@ bool lexer::isDelimeter(char c){}
 
 bool lexer::isLiteral(char c){}
 
-std::string lexer::parse_identifier(int &pos){
+std::string lexer::parseString(int &pos){
 
-    int offset = 1;
-    std::string extendedCharacter = "+-.*/<=>!?:$%_&~^";
+    pos++;
+    std::string str;
+
+    char current_char = charVec->at(pos);
+
+    while (current_char != EOF && current_char != '\"'){
+
+        if (current_char == '\\') {str += parseEscapeSequence(pos); continue;}
+
+        else {str += current_char;}
+
+        pos++;
+
+        current_char = charVec->at(pos);
+
+    }
+
+    return str;
+
+}
+
+std::string lexer::parseEscapeSequence(int &pos){
+
+    char current_char = charVec->at(pos);
+    char next_char = charVec->at(pos + 1);
+
+    const std::string escapeChars = "abfnrtv'\"\\\?";
+    
+    // Common Escape Sequence
+    if (escapeChars.find(next_char) != std::string::npos){
+
+        return std::string(1, current_char) + std::string(1, next_char); 
+
+    }
+
+    // ASCII octal notations
+    else if (isdigit(next_char)){
+
+        return "";
+
+    }
+
+    // ASCII or UNICODE in hexadecimal notation
+    else if (next_char == 'x'){
+
+        return "";
+
+    }
+}
+
+std::string lexer::parseIdentifier(int &pos){
+
+    int offset = 0;
+    const std::string extendedCharacter = "+-.*/<=>!?:$%_&~^";
 
     std::string id;
 
-    id += charVec->at(pos); 
+    char current_char = charVec->at(pos);
 
-    char current_char = charVec->at(pos + offset);
+    //id += current_char; 
+
+    //char current_char = charVec->at(pos + offset);
 
     while (isalnum(current_char) || current_char == '_' || extendedCharacter.find(current_char) != std::string::npos){
 
-        current_char = charVec->at(pos + offset);
         id += current_char;
         offset++;
+        current_char = charVec->at(pos + offset);
  
     }
 
-    pos += offset;
+    pos += offset + 1;
 
     //std::cout << id << std::endl;
 
@@ -138,6 +206,6 @@ std::string lexer::parse_identifier(int &pos){
 
 }
 
-std::string lexer::parse_number(int pos){}
+std::string lexer::parseNumber(int &pos){}
 
-std::string lexer::parse_literal(int pos){}
+std::string lexer::parseLiteral(int &pos){}

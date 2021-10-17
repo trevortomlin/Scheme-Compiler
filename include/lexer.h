@@ -24,9 +24,11 @@ class lexer{
         static bool isDelimeter(char c);
         static bool isIdentifier(char c);
 
-        std::string parse_identifier(int &pos);
-        std::string parse_number(int pos);
-        std::string parse_literal(int pos);
+        std::string parseIdentifier(int &pos);
+        std::string parseNumber(int &pos);
+        std::string parseLiteral(int &pos);
+        std::string parseString(int &pos);
+        std::string parseEscapeSequence(int &pos);
 };
 
 #endif

@@ -14,7 +14,7 @@ struct token{
         TOKEN_L_PAREN,
         TOKEN_R_PAREN,
         TOKEN_SINGLE_QUOTE,
-        TOKEN_TILDE,
+        TOKEN_BACK_QUOTE,
         TOKEN_COMMA,
         TOKEN_COMMA_AND,
         TOKEN_PERIOD,

@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
     do{
 
         t = l.advance();
-        std::cout << t.type << " " << t.value << std::endl;
+        std::cout << "(" << t.type << ", " << "\"" << t.value << "\")" << std::endl;
 
     }while(t.type != token::TOKEN_EOF);
 
