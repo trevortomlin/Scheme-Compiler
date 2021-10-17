@@ -7,9 +7,17 @@ struct token{
     enum token_type{
         TOKEN_IDENTIFIER,
         TOKEN_NUMBER,
-        TOKEN_OPERATOR,
-        TOKEN_PUNCTUATOR,
-        TOKEN_LITERAL,
+        TOKEN_BOOLEAN,
+        TOKEN_CHARACTER,
+        TOKEN_STRING,
+        TOKEN_HASH_L_PAREN, 
+        TOKEN_L_PAREN,
+        TOKEN_R_PAREN,
+        TOKEN_SINGLE_QUOTE,
+        TOKEN_TILDE,
+        TOKEN_COMMA,
+        TOKEN_COMMA_AND,
+        TOKEN_PERIOD,
         TOKEN_EOF,
     } type;
 

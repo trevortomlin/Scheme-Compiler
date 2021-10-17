@@ -36,36 +36,52 @@ token lexer::advance(){
 
     c = charVec->at(pos);
 
+    int state = 0;
+
+    std::cout << c << std::endl;
+
+    switch (state){
+
+        case 0:
+
+            if (isIdentifier(c)) {state = 1; break;}
+            else if (isspace(c)) {pos++; break;}
+            else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
+            else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
+
+            break;
+        // Identifier State
+        case 1:
+
+            break;
+
+    }
+    
+
     //std::cout << c << std::endl;
 
-    if (isspace(c)){
+    // if (isspace(c)){
 
-        // pos++;
-        // return;
+    //     // pos++;
+    //     // return;
 
-    }
+    // }
 
-    if (isalpha(c) || c == '_'){
+    // if (isPunctuator(c)){
 
-        std::string id = lexer::parse_identifier(pos);
-        return token(token::TOKEN_IDENTIFIER, id);
-    }
+    //     pos++;
+    //     return(token(token::TOKEN_PUNCTUATOR, std::string(1, c)));
 
-    if (isPunctuator(c)){
+    // }
 
-        pos++;
-        return(token(token::TOKEN_PUNCTUATOR, std::string(1, c)));
-
-    }
-
-    if (isLiteral(c)){
+    // if (isLiteral(c)){
 
 
 
-    }
+    // }
 
-    //return(token(token::TOKEN_PUNCTUATOR, std::string(1, c));
-    pos++;
+    // //return(token(token::TOKEN_PUNCTUATOR, std::string(1, c));
+    // pos++;
     return token(token::TOKEN_EOF, "EOF");
 
 }
@@ -73,6 +89,12 @@ token lexer::advance(){
 lexer::~lexer(){
 
     delete(charVec);
+
+}
+ 
+bool lexer::isIdentifier(char c){
+
+    return false;
 
 }
 
@@ -84,6 +106,8 @@ bool lexer::isPunctuator(char c){
     return false;
 
 }
+
+bool lexer::isDelimeter(char c){}
 
 bool lexer::isLiteral(char c){}
 
