@@ -21,6 +21,14 @@ int main(int argc, char *argv[]){
     // std::cout << token1.type << " " << token1.value << std::endl;
     // std::cout << token2.type << " " << token2.value << std::endl;
 
+    // std::cout << l.charVec->size() << std::endl;
+
+    // for (auto i = l.charVec->begin(); i != l.charVec->end(); ++i){
+
+    //     std::cout << *i << std::endl;
+
+    // }
+
     token t(token::TOKEN_EOF, "EOF");
 
     do{
@@ -33,11 +41,6 @@ int main(int argc, char *argv[]){
 
     //std::cout << l.advance().type << std::endl;
 
-    // for (auto i = l.charVec->begin(); i != l.charVec->end(); ++i){
-
-    //     std::cout << *i << std::endl;
-
-    // }
 
     // std::cout << l.c << std::endl;
     

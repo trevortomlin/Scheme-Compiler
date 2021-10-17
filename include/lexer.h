@@ -21,9 +21,10 @@ class lexer{
 
         static bool isPunctuator(char c);
         static bool isLiteral(char c);
-        static bool isDelimeter(char c);
+        static bool isDelimiter(char c);
         static bool isIdentifier(char c);
 
+        std::string parseCharacter(int &pos);
         std::string parseIdentifier(int &pos);
         std::string parseNumber(int &pos);
         std::string parseLiteral(int &pos);

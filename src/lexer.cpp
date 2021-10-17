@@ -34,13 +34,13 @@ lexer::lexer(const char *file){
 
 token lexer::advance(){
 
-    c = charVec->at(pos);
+    //std::cout << c << std::endl;
 
     int state = 0;
 
-    //std::cout << c << std::endl;
-
     while(c != EOF){
+
+        c = charVec->at(pos);
 
         switch (state){
 
@@ -51,6 +51,7 @@ token lexer::advance(){
                 else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c));}
                 else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
                 else if (c == '"') {state = 2; break;}
+                else if (c == '#') {state = 3; break;}
 
                 break;
             }
@@ -61,11 +62,30 @@ token lexer::advance(){
                 return token(token::TOKEN_IDENTIFIER, id);
                 break;
             }
-            // String Case
-            case 2:{
+            // String State
+            case 2: {
                 
                 std::string str = parseString(pos);
                 return token(token::TOKEN_STRING, str);
+                break;
+
+            }
+
+            // Constant State
+            case 3: {
+
+                char next_char = charVec->at(pos + 1);
+
+                switch (next_char){
+
+                    case 't':
+                    case 'f': pos+=2; return token(token::TOKEN_BOOLEAN, "#" + std::string(1, next_char)); break;
+
+                    case '\\': pos += 2; return token(token::TOKEN_CHARACTER, parseCharacter(pos)); break;
+                    
+                    case '(': pos += 2; return token(token::TOKEN_VECTOR_CONSTANT, "#" + std::string(1, next_char)); break;
+                }
+
                 break;
 
             }
@@ -121,9 +141,25 @@ bool lexer::isPunctuator(char c){
 
 }
 
-bool lexer::isDelimeter(char c){}
+bool lexer::isDelimiter(char c){
+
+    std::string delimiters = " \n()\";";
+
+}
 
 bool lexer::isLiteral(char c){}
+
+std::string lexer::parseCharacter(int &pos){
+
+    std::string character = parseIdentifier(pos);
+
+    if (character.size() == 1){return character;}
+
+    else if (character == "space"){return " ";}
+
+    else if (character == "newline"){return "\\n";}
+
+}
 
 std::string lexer::parseString(int &pos){
 
