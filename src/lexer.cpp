@@ -49,7 +49,7 @@ token lexer::advance(){
                 if (isIdentifier(c)) {state = 1; break;}
                 else if (isspace(c)) {pos++; break;}
                 else if (isdigit(c)){state = 4; break;}
-                else if (c == '.' || c == '+' || c == '...' || c == '-'){state = 6; break;}
+                else if (c == '.' || c == '+' || c == '-'){state = 6; break;}
                 else if (c == ';') {skipComment(pos); break;}
                 else if (c == '"') {state = 2; break;}
                 else if (c == '#') {state = 3; break;}
@@ -112,16 +112,19 @@ token lexer::advance(){
 
                 std::string prefix = "";
 
-                if (c == '#'){
+                char current_char, next_char;
 
-                    char next_char = charVec->at(pos+1);
+                do{
+
+                    current_char = charVec->at(pos);
+                    next_char = charVec->at(pos+1);
 
                     switch (next_char)
                     {
                     case 'i':
                     case 'e':
                         pos += 2;
-                        std::string(1, c) + std::string(1, next_char);
+                        prefix += std::string(1, c) + std::string(1, next_char);
                         break;
 
                     case 'b':
@@ -129,12 +132,12 @@ token lexer::advance(){
                     case 'd':
                     case 'x':
                         pos += 2;
-                        std::string(1, c) + std::string(1, next_char);
+                        prefix += std::string(1, c) + std::string(1, next_char);
                         break;    
                     
                     }
 
-                }
+                } while (current_char == '#');
 
 
                 return token(token::TOKEN_NUMBER, prefix + parseNumber(pos));
@@ -191,7 +194,7 @@ token lexer::advance(){
 
                 // if (ellipse){return token(token::TOKEN_IDENTIFIER, "...";}
 
-                if (next_char = ' ') {pos++; return token(token::TOKEN_IDENTIFIER, std::string(1, c));}
+                if (next_char == ' ') {pos++; return token(token::TOKEN_IDENTIFIER, std::string(1, c));}
 
                 else {state = 4;}
 
@@ -231,9 +234,7 @@ token lexer::advance(){
 
 void lexer::skipComment(int &pos){
 
-    pos++;
-
-    while (charVec->at(pos) != '\n'){
+    while (charVec->at(pos) != '\n' && charVec->at(pos) != EOF){
 
         pos++;
 
@@ -372,7 +373,7 @@ std::string lexer::parseNumber(int &pos){
 
     std::string number = "";
 
-    while (!isDelimiter(current_char)){
+    while (!isDelimiter(current_char) && current_char != EOF){
 
         number += current_char;
         pos++;
