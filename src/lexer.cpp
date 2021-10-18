@@ -91,16 +91,57 @@ token lexer::advance(){
                     case '\\': pos += 2; return token(token::TOKEN_CHARACTER, parseCharacter(pos)); break;
                     
                     case '(': pos += 2; return token(token::TOKEN_VECTOR_CONSTANT, "#" + std::string(1, next_char)); break;
+
+
+                    // Radix and exactness markers
+                    case 'e':
+                    case 'i':
+                    case 'b':
+                    case 'o':
+                    case 'd':
+                    case 'x': state = 4; break;
+                    //pos += 2; return token(token::TOKEN_CHARACTER, "#" + std::string(1, next_char)); break;
                 }
 
                 break;
-
+ 
             }
 
             // Number State
             case 4: {
 
+                std::string prefix = "";
 
+                if (c == '#'){
+
+                    char next_char = charVec->at(pos+1);
+
+                    switch (next_char)
+                    {
+                    case 'i':
+                    case 'e':
+                        pos += 2;
+                        std::string(1, c) + std::string(1, next_char);
+                        break;
+
+                    case 'b':
+                    case 'o':
+                    case 'd':
+                    case 'x':
+                        pos += 2;
+                        std::string(1, c) + std::string(1, next_char);
+                        break;    
+                    
+                    }
+
+                }
+
+
+                return token(token::TOKEN_NUMBER, prefix + parseNumber(pos));
+                
+                //pos++;
+                //
+                break;
 
             }
 
@@ -317,7 +358,7 @@ std::string lexer::parseIdentifier(int &pos){
  
     }
 
-    pos += offset + 1;
+    pos += offset;
 
     //std::cout << id << std::endl;
 
@@ -325,6 +366,25 @@ std::string lexer::parseIdentifier(int &pos){
 
 }
 
-std::string lexer::parseNumber(int &pos){}
+std::string lexer::parseNumber(int &pos){
 
-std::string lexer::parseLiteral(int &pos){}
+    char current_char = charVec->at(pos);
+
+    std::string number = "";
+
+    while (!isDelimiter(current_char)){
+
+        number += current_char;
+        pos++;
+        current_char = charVec->at(pos);
+
+
+    }
+
+    //std::cout << number << std::endl;
+
+    return number;
+
+}
+
+//std::string lexer::parseLiteral(int &pos){}
