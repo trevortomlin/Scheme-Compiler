@@ -289,9 +289,11 @@ std::string lexer::parseString(int &pos){
     pos++;
     std::string str;
 
-    char current_char = charVec->at(pos);
+    char current_char;
 
-    while (current_char != EOF && current_char != '\"'){
+    do {
+
+        current_char = charVec->at(pos);
 
         if (current_char == '\\') {str += parseEscapeSequence(pos); continue;}
 
@@ -301,7 +303,7 @@ std::string lexer::parseString(int &pos){
 
         current_char = charVec->at(pos);
 
-    }
+    } while (current_char != EOF && current_char != '\"');
 
     pos++;
 
@@ -319,6 +321,7 @@ std::string lexer::parseEscapeSequence(int &pos){
     // Common Escape Sequence
     if (escapeChars.find(next_char) != std::string::npos){
 
+        pos += 2;
         return std::string(1, current_char) + std::string(1, next_char); 
 
     }
