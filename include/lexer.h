@@ -19,6 +19,7 @@ class lexer{
 
     private:
 
+        // These should go in a seperate class.
         static bool isPunctuator(char c);
         static bool isLiteral(char c);
         static bool isDelimiter(char c);
@@ -26,6 +27,7 @@ class lexer{
 
         void skipComment(int &pos);
 
+        // These should be renamed.
         std::string parseCharacter(int &pos);
         std::string parseIdentifier(int &pos);
         std::string parseNumber(int &pos);
