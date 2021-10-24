@@ -9,6 +9,7 @@ class lexer{
 
     public:
 
+        // This should not be a pointer.
         std::vector<char> *charVec = new std::vector<char>;
         char c;
         int pos = 0;
