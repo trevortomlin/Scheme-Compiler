@@ -1,5 +1,6 @@
 #include <iostream>
 #include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char *argv[]){
 
@@ -13,6 +14,7 @@ int main(int argc, char *argv[]){
     const char *file = argv[1];
 
     lexer l = lexer(file);
+    parser p = parser();
 
     //std::cout << l.c << isalpha(l.c) << std::endl;-
 
@@ -35,6 +37,8 @@ int main(int argc, char *argv[]){
 
         t = l.advance();
         std::cout << "(" << t.type << ", " << "\"" << t.value << "\")" << std::endl;
+        std::cout << p.parse_expression(t).value << std::endl;
+
 
     }while(t.type != token::TOKEN_EOF);
 

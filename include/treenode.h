@@ -17,6 +17,4 @@ struct treenode{
 
 };
 
-struct treenode 
-
 #endif
