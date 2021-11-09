@@ -3,12 +3,17 @@
 #include "token.h"
 
 treenode root("root");
+treenode *current_node =  root;
 
 treenode parser::parse(){
 
     while(current_token.type != token::TOKEN_EOF){
         //parse_expression();
-        std::cout << parse_expression().value << std::endl;
+        treenode node = parse_expression();
+        std::cout << node.value << std::endl;
+
+        current_node->insert(node)
+
         advance();
     }
 
@@ -72,7 +77,8 @@ treenode parser::parse_expression(){
     // Variable Node
     if (!tokenIsVariable(current_token)) { return treenode(current_token.value); }
 
-    if (current_token.type == token::TOKEN_L_PAREN) {}
+    // Parentheses
+    else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) { return treenode(current_token.value); }
 
     else{ return treenode("NOT VALID TOKEN."); }
 
