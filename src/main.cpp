@@ -13,8 +13,14 @@ int main(int argc, char *argv[]){
 
     const char *file = argv[1];
 
-    lexer l = lexer(file);
-    parser p = parser();
+    lexer *l = new lexer(file);
+    parser *p = new parser(l);
+
+    //std::cout << p->parse_expression().value << std::endl;
+    p->parse();
+
+    delete l;
+    delete p;
 
     //std::cout << l.c << isalpha(l.c) << std::endl;-
 
@@ -31,16 +37,16 @@ int main(int argc, char *argv[]){
 
     // }
 
-    token t(token::TOKEN_EOF, "EOF");
+    //token t(token::TOKEN_EOF, "EOF");
 
-    do{
+    // do{
 
-        t = l.advance();
-        std::cout << "(" << t.type << ", " << "\"" << t.value << "\")" << std::endl;
-        std::cout << p.parse_expression(t).value << std::endl;
+    //     //t = l.advance();
+    //     //std::cout << "(" << t.type << ", " << "\"" << t.value << "\")" << std::endl;
+    //     std::cout << p.parse_expression().value << std::endl;
 
 
-    }while(t.type != token::TOKEN_EOF);
+    // }while(t.type != token::TOKEN_EOF);
 
 
     //std::cout << l.advance().type << std::endl;

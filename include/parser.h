@@ -3,18 +3,26 @@
 
 #include "treenode.h"
 #include "token.h"
+#include "lexer.h"
 #include <set>
 
 class parser{
+
+    lexer *lex;
+
+    token current_token, next_token;
 
     std::set<std::string> variables;
 
     public:
 
-        parser();
+        parser(lexer *_lex);
+        ~parser();
 
-        treenode parse_token(token t);
-        treenode parse_expression(token t);
+        void advance();
+
+        treenode parse();
+        treenode parse_expression();
         treenode parse_variable(token t);
         treenode parse_literal(token t);
         treenode parse_procedure_call(token t);

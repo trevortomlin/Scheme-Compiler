@@ -2,7 +2,36 @@
 #include "treenode.h"
 #include "token.h"
 
-parser::parser() {
+treenode root("root");
+
+treenode parser::parse(){
+
+    while(current_token.type != token::TOKEN_EOF){
+        //parse_expression();
+        std::cout << parse_expression().value << std::endl;
+        advance();
+    }
+
+    return root;
+}
+
+void parser::advance(){
+
+    current_token = next_token;
+    next_token = lex->advance();
+
+}
+
+parser::parser(lexer *_lex) : lex(_lex) {
+
+    //lex = _lex;
+
+    current_token = lex->advance();
+    next_token = lex->advance();
+
+    std::cout << "(" << current_token.type << ", " << "\"" << current_token.value << "\")" << std::endl;
+
+    std::cout << root.value << std::endl;
 
     // Might want to move this to another location eventually.
 
@@ -32,16 +61,19 @@ parser::parser() {
 
 }
 
-treenode parser::parse_token(token t){
+parser::~parser(){
 
-    
+    //delete lex;
 
 }
 
-treenode parser::parse_expression(token t){
+treenode parser::parse_expression(){
 
     // Variable Node
-    if (!tokenIsVariable(t)) { return treenode(t.value); }
+    if (!tokenIsVariable(current_token)) { return treenode(current_token.value); }
+
+    if (current_token.type == token::TOKEN_L_PAREN) {}
+
     else{ return treenode("NOT VALID TOKEN."); }
 
 }

@@ -23,7 +23,10 @@ struct token{
 
     std::string value;   
 
+    void operator=(token t);
+
     token(token_type _t, std::string _value);
+    token();
 
 };
 
