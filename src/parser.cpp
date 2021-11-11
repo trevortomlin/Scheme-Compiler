@@ -78,7 +78,36 @@ treenode parser::parse_expression(){
     if (!tokenIsVariable(current_token)) { return treenode(current_token.value); }
 
     // Parentheses
-    else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) { return treenode(current_token.value); }
+    else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) {
+
+        // Literal Quotation
+        if (current_token.type == token::TOKEN_L_PAREN && next_token.value == "quote") {
+
+            return parse_literal(current_token);
+
+        }
+
+        else {
+
+            return treenode(current_token.value); 
+
+        }
+
+    }
+
+
+
+    // Literal Self-evaluating
+    else if (current_token.type == token::TOKEN_SINGLE_QUOTE ||
+             current_token.type == token::TOKEN_BOOLEAN ||
+             current_token.type == token::TOKEN_NUMBER ||
+             current_token.type == token::TOKEN_CHARACTER ||
+             current_token.type == token::TOKEN_STRING) {
+
+        return treenode(current_token.value); 
+
+    }
+
 
     else{ return treenode("NOT VALID TOKEN."); }
 
@@ -89,5 +118,72 @@ bool parser::tokenIsVariable(token t) {
 
     const bool is_in = variables.find(t.value) != variables.end();
     return is_in;
+
+}
+
+treenode parser::parse_literal(token t) {
+
+
+    // Literal Quotation `<datum>
+    if (t.type == token::TOKEN_SINGLE_QUOTE) {
+
+        
+
+    }
+
+    // Literal Quotation (quote <datum>)
+    else if (t.type == token::TOKEN_L_PAREN && next_token.value == "quote" ) {
+
+
+
+    }
+
+    else {
+
+        // Throw error.
+        std::cout << "Parse literal error." << std::endl;
+
+
+    }
+
+
+}
+
+treenode parser::parse_datum(token t) {
+
+    // Simple Datum
+    if (current_token.type == token::TOKEN_SINGLE_QUOTE ||
+        current_token.type == token::TOKEN_BOOLEAN ||
+        current_token.type == token::TOKEN_NUMBER ||
+        current_token.type == token::TOKEN_CHARACTER ||
+        current_token.type == token::TOKEN_STRING ||
+        current_token.type == token::TOKEN_IDENTIFIER) {
+
+        return treenode(current_token.value);         
+
+
+    }
+
+    // Compound Datum
+    else {
+
+        return parse_compound_datum(t);
+
+    }
+
+
+
+}
+
+treenode parser::parse_compound_datum(token t) {
+
+    // Vector
+    if (t.type == token::TOKEN_VECTOR_CONSTANT) {
+
+        return parse_datum(t);
+
+    }
+
+    else if (t.type == token::TOKEN_L_PAREN)
 
 }
