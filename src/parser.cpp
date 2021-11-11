@@ -177,13 +177,35 @@ treenode parser::parse_datum(token t) {
 
 treenode parser::parse_compound_datum(token t) {
 
-    // Vector
+    // Vector #(〈datum〉*)
     if (t.type == token::TOKEN_VECTOR_CONSTANT) {
 
         return parse_datum(t);
 
     }
 
-    else if (t.type == token::TOKEN_L_PAREN)
+    // List
+
+    // (〈datum〉*) | (〈datum〉+ . 〈datum〉)
+    else if (t.type == token::TOKEN_L_PAREN) {
+
+        while (current_token.type != token::TOKEN_R_PAREN) {
+
+            parse_datum();
+
+        }
+
+    }
+
+    //〈abbreviation〉 −→ 〈abbrev prefix〉 〈datum〉
+    //〈abbrev prefix〉 −→ ’ | ` | , | ,@
+    else if (t.type == token::TOKEN_SINGLE_QUOTE ||
+             t.type == token::TOKEN_BACK_QUOTE ||
+             t.type == token::TOKEN_COMMA ||
+             t.type == token::TOKEN_COMMA_AT || ) {
+
+            return parse_datum(t);
+
+        }
 
 }
