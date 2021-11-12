@@ -32,7 +32,8 @@ class parser{
         treenode parse_derived_expression(token t);
         treenode parse_macro_use(token t);
         treenode parse_macro_block(token t);
-        treenode parser::parse_datum(token t);
+        treenode parse_datum(token t);
+        treenode parse_compound_datum(token t);
 
         bool tokenIsVariable(token t);
 

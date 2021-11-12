@@ -1,4 +1,5 @@
 #include "treenode.h"
+#include <iostream>
 
 treenode::treenode(std::string v){
 
@@ -6,17 +7,44 @@ treenode::treenode(std::string v){
 
 }
 
-void treenode::insert(treenode *child){
+void treenode::insert(treenode child){
 
     children.push_back(child);
 
 }
 
-void treenode::delete_node(treenode *child){
+// void treenode::delete_node(treenode child){
 
-    auto it = std::find(children.begin(), children.end(), child);
-    if(it != children.end())
-        children.erase(it);
-//children.erase(std::remove(children.begin(), children.end(), child), children.end());
+//     // for (auto &childIt : children) {
+            
+//     //     if(&child == childIt) {
+
+//     //         children.erase(std::remove(children.begin(), children.end(), &child), children.end());
+
+//     //     }
+
+//     // }
+
+//     auto it = std::find(children.begin(), children.end(), &child);
+//     if(it != children.end()) {
+//         children.erase(it);
+//         children.erase(std::remove(children.begin(), children.end(), &child), children.end());
+//     }
+
+// }
+
+void treenode::printTree(const std::string& prefix, const treenode node) {
+
+    std::cout << prefix << node.value << std::endl;
+
+    if (node.children.size() != 0) {
+
+        for (auto &child : node.children) {
+            
+            treenode::printTree(prefix + "  ", child);    
+
+        }
+
+    }
 
 }

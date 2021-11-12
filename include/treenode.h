@@ -8,12 +8,13 @@
 struct treenode{
 
     std::string value;
-    std::vector<treenode*> children;
+    std::vector<treenode> children;
 
     treenode(std::string v);
 
-    void insert(treenode *child);
-    void delete_node(treenode *child);
+    void insert(treenode child);
+    void delete_node(treenode child);
+    static void printTree(const std::string& prefix, const treenode node);
 
 };
 
