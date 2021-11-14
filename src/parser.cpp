@@ -208,14 +208,26 @@ treenode parser::parse_compound_datum(token t) {
 
         treenode list = treenode("list");
 
-        // No datum
-        if (next_token.type = token::TOKEN_R_PAREN) { return list; }
+        while (next_token.type != token::TOKEN_R_PAREN) {
 
-        while (current_token.type != token::TOKEN_R_PAREN) {
+            advance();
 
-            list.insert(parse_datum(t));
 
+            if (!list.children.empty() && current_token.type == token::TOKEN_PERIOD) {
+
+                list.insert(treenode(current_token.value));
+
+            }
+
+            else {
+
+                list.insert(parse_datum(current_token));
+
+            }
+            
         }
+
+        advance();
 
         return list;
 
