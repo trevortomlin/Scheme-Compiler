@@ -88,7 +88,13 @@ treenode parser::parse_expression(){
 
     }
 
-    // Parentheses
+    // Procedure call ...
+    else if (current_token.type == token::TOKEN_L_PAREN) {
+
+        return parse_procedure_call(current_token);
+
+    }
+
     // else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) {
 
     //         return treenode(current_token.value); 
@@ -114,6 +120,24 @@ bool parser::tokenIsVariable(token t) {
 
     const bool is_in = variables.find(t.value) != variables.end();
     return is_in;
+
+}
+
+treenode parser::parse_procedure_call(token t) {
+
+    treenode procedure = treenode("procedure");
+
+    while (next_token.type != token::TOKEN_R_PAREN) {
+
+        advance();
+        procedure.insert(parse_expression());
+
+
+    }
+
+    advance();
+
+    return procedure;
 
 }
 
@@ -150,7 +174,6 @@ treenode parser::parse_literal(token t) {
 
     }
 
-
 }
 
 treenode parser::parse_datum(token t) {
@@ -163,7 +186,6 @@ treenode parser::parse_datum(token t) {
         current_token.type == token::TOKEN_IDENTIFIER) {
 
         return treenode(current_token.value);         
-
 
     }
 
