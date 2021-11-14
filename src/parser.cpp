@@ -36,9 +36,9 @@ parser::parser(lexer *_lex) : lex(_lex) {
     current_token = lex->advance();
     next_token = lex->advance();
 
-    std::cout << "(" << current_token.type << ", " << "\"" << current_token.value << "\")" << std::endl;
+    //std::cout << "(" << current_token.type << ", " << "\"" << current_token.value << "\")" << std::endl;
 
-    std::cout << root.value << std::endl;
+    //std::cout << root.value << std::endl;
 
     // Might want to move this to another location eventually.
 
@@ -77,25 +77,23 @@ parser::~parser(){
 treenode parser::parse_expression(){
 
     // Variable Node
-    if (!tokenIsVariable(current_token)) { return treenode(current_token.value); }
+    if (current_token.type == token::TOKEN_IDENTIFIER && !tokenIsVariable(current_token)) { return treenode(current_token.value); }
 
-    // Parentheses
-    else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) {
+    // Literal Quotation 
+    //〈quotation〉 −→ ’〈datum〉 | (quote 〈datum〉)
+    // current_token.type == token::TOKEN_L_PAREN && next_token.value == "quote" ||
+    else if (current_token.type == token::TOKEN_SINGLE_QUOTE) {
 
-        // Literal Quotation
-        if (current_token.type == token::TOKEN_L_PAREN && next_token.value == "quote") {
-
-            return parse_literal(current_token);
-
-        }
-
-        else {
-
-            return treenode(current_token.value); 
-
-        }
+        return parse_literal(current_token);
 
     }
+
+    // Parentheses
+    // else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) {
+
+    //         return treenode(current_token.value); 
+
+    // }
 
     // Literal Self-evaluating
     else if (current_token.type == token::TOKEN_BOOLEAN ||
@@ -126,7 +124,9 @@ treenode parser::parse_literal(token t) {
     if (t.type == token::TOKEN_SINGLE_QUOTE) {
 
         treenode node = treenode(current_token.value);
-        node.insert(parse_datum(t));
+        advance();
+        node.insert(parse_datum(current_token));
+        //treenode node = treenode(parse_datum(current_token));
         return node;
 
     }
@@ -135,7 +135,9 @@ treenode parser::parse_literal(token t) {
     else if (t.type == token::TOKEN_L_PAREN && next_token.value == "quote" ) {
 
         treenode node = treenode(next_token.value);
-        node.insert(parse_datum(t));
+        advance();
+        advance();
+        node.insert(parse_datum(current_token));
         return node;
 
     }
@@ -168,8 +170,9 @@ treenode parser::parse_datum(token t) {
     // Compound Datum
     else {
 
-        treenode node = treenode(current_token.value);
-        node.insert(parse_compound_datum(t));
+        //treenode node = treenode(current_token.value);
+        //node.insert(parse_compound_datum(t));
+        treenode node = treenode(parse_compound_datum(t));
         return node;
 
     }
@@ -184,13 +187,16 @@ treenode parser::parse_compound_datum(token t) {
         treenode vector = treenode("vector");
 
         // No datum
-        if (next_token.type = token::TOKEN_R_PAREN) { return vector; }
+        //if (next_token.type = token::TOKEN_R_PAREN) { return vector; }
 
-        while (current_token.type != token::TOKEN_R_PAREN) {
- 
-                vector.insert(parse_datum(t));
+        while (next_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+            vector.insert(parse_datum(current_token));
             
         }
+
+        advance();
 
         return vector;
 
