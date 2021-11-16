@@ -80,7 +80,7 @@ treenode parser::parse_expression(){
     if (current_token.type == token::TOKEN_IDENTIFIER && !tokenIsVariable(current_token)) { return treenode(current_token.value); }
 
     // Literal Quotation 
-    //〈quotation〉 −→ ’〈datum〉 | (quote 〈datum〉)
+    //〈quotation〉 −→ ’〈datum〉
     // current_token.type == token::TOKEN_L_PAREN && next_token.value == "quote" ||
     else if (current_token.type == token::TOKEN_SINGLE_QUOTE) {
 
@@ -88,10 +88,21 @@ treenode parser::parse_expression(){
 
     }
 
-    // Procedure call ...
     else if (current_token.type == token::TOKEN_L_PAREN) {
 
-        return parse_procedure_call(current_token);
+        //〈quotation〉 −→ (quote 〈datum〉)
+        if (next_token.value == "quote") { return parse_literal(current_token); }
+
+        //〈lambda expression〉 −→ (lambda 〈formals〉 〈body〉
+        if (next_token.value == "lambda") { return parse_lambda_expression(); }
+        
+        //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
+        //if (next_token.value == "lambda") { return parse_lambda_expression(current_token); }
+
+        //〈assignment〉 −→ (set! 〈variable〉 〈expression〉)
+        //if (next_token.value == "lambda") { return parse_lambda_expression(current_token); }
+
+        return parse_procedure_call();
 
     }
 
@@ -123,7 +134,88 @@ bool parser::tokenIsVariable(token t) {
 
 }
 
-treenode parser::parse_procedure_call(token t) {
+treenode parser::parse_lambda_expression() {
+
+    treenode lambda = treenode("lambda"); 
+
+    // Skip ( lambda
+    advance();
+    advance();
+
+    lambda.insert(parse_lambda_formals());
+
+    advance();
+
+    lambda.insert(parse_lambda_body());
+
+    return lambda;
+
+}
+
+treenode parser::parse_lambda_formals(){
+
+    treenode formals = treenode("formals");
+
+    // Error
+    if (current_token.type != token::TOKEN_L_PAREN) { std::cout << "Error." << std::endl; return treenode("ERROR."); }
+
+    // Skip (
+    advance();
+
+    while (next_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+
+            if (current_token.type == token::TOKEN_PERIOD) {
+
+                // Error
+                if (formals.children.empty()) { return treenode("ERROR."); }
+
+                formals.insert(treenode(current_token.value));
+                advance();
+                formals.insert(treenode(current_token.value));
+                break;
+
+            }
+
+            else {
+                // Error
+                if (!tokenIsVariable(current_token)) { return treenode("ERROR."); }
+
+                formals.insert(treenode(current_token.value));
+
+            }
+            
+        }
+
+    // Skip )
+    advance();
+
+    return formals;
+
+}
+
+treenode parser::parse_lambda_body(){
+
+    //〈body〉 −→ 〈definition〉* 〈sequence
+    treenode body = treenode("body");
+
+    //〈definition〉 −→ (define 〈variable〉 〈expression〉)
+|   // (define (〈variable〉 〈def formals〉) 〈body〉)
+|   // (begin 〈definition〉*)
+    if (current_token.type == token::TOKEN_L_PAREN &&
+        next_token.value == "define") {
+
+
+
+
+    }
+
+    return body;
+
+}
+
+treenode parser::parse_procedure_call() {
 
     treenode procedure = treenode("procedure");
 
@@ -235,9 +327,15 @@ treenode parser::parse_compound_datum(token t) {
             advance();
 
 
-            if (!list.children.empty() && current_token.type == token::TOKEN_PERIOD) {
+            if (current_token.type == token::TOKEN_PERIOD) {
+
+                //Error
+                if (list.children.empty()){ return treenode("ERROR."); }
 
                 list.insert(treenode(current_token.value));
+                advance();
+                list.insert(parse_datum(current_token));
+                break;
 
             }
 

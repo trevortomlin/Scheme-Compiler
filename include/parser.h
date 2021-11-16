@@ -8,34 +8,40 @@
 
 class parser{
 
-    lexer *lex;
-
-    token current_token, next_token;
-
-    std::set<std::string> variables;
-
     public:
 
         parser(lexer *_lex);
         ~parser();
 
-        void advance();
+        bool tokenIsVariable(token t);
 
         treenode parse();
+
+
+    private:
+
+        lexer *lex;
+
+        token current_token, next_token;
+
+        std::set<std::string> variables;
+
+        void advance();
+        
         treenode parse_expression();
         treenode parse_variable(token t);
         treenode parse_literal(token t);
-        treenode parse_procedure_call(token t);
-        treenode parse_lambda_expression(token t);
-        treenode parse_conditional(token t);
-        treenode parse_assignment(token t);
-        treenode parse_derived_expression(token t);
-        treenode parse_macro_use(token t);
-        treenode parse_macro_block(token t);
+        treenode parse_procedure_call();
+        treenode parse_lambda_expression();
+        treenode parse_lambda_formals();
+        treenode parse_lambda_body();
+        treenode parse_conditional();
+        treenode parse_assignment();
+        treenode parse_derived_expression();
+        treenode parse_macro_use();
+        treenode parse_macro_block();
         treenode parse_datum(token t);
         treenode parse_compound_datum(token t);
-
-        bool tokenIsVariable(token t);
 
 };
 
