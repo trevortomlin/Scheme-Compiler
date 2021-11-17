@@ -146,7 +146,7 @@ treenode parser::parse_lambda_expression() {
 
     advance();
 
-    lambda.insert(parse_lambda_body());
+    lambda.insert(parse_body());
 
     return lambda;
 
@@ -195,23 +195,97 @@ treenode parser::parse_lambda_formals(){
 
 }
 
-treenode parser::parse_lambda_body(){
+treenode parser::parse_body(){
 
     //〈body〉 −→ 〈definition〉* 〈sequence
     treenode body = treenode("body");
 
-    //〈definition〉 −→ (define 〈variable〉 〈expression〉)
-|   // (define (〈variable〉 〈def formals〉) 〈body〉)
-|   // (begin 〈definition〉*)
+    // definition
     if (current_token.type == token::TOKEN_L_PAREN &&
         next_token.value == "define") {
 
-
+            advance();
+            body.insert(parse_define());
 
 
     }
 
     return body;
+
+}
+
+treenode parser::parse_define() {
+
+    if (current_token.value != "define") { return treenode("ERROR."); }
+
+    treenode define = treenode("define");
+
+    // skip define
+    advance();
+
+    //〈definition〉 −→ (define 〈variable〉 〈expression〉)
+    if (tokenIsVariable(current_token)){
+
+        define.insert(treenode(current_token.value));
+        advance();
+        define.insert(parse_expression());
+
+    }
+
+    // (define (〈variable〉 〈def formals〉) 〈body〉)
+    else if (current_token.type == token::TOKEN_L_PAREN) {
+
+        define.insert(treenode(current_token.value));
+        advance();
+        define.insert(parse_define_formals());
+        advance();
+        define.insert(parse_body());
+
+    }
+
+    // (begin 〈definition〉*)
+    else if (current_token.type != token::TOKEN_R_PAREN) {
+
+        define.insert(parse_define());
+
+    }
+
+    advance();
+    return define;
+
+}
+
+treenode parser::parse_define_formals() {
+
+    treenode formals = treenode("formals");
+
+    while (next_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+
+            if (current_token.type == token::TOKEN_PERIOD) {
+
+                formals.insert(treenode(current_token.value));
+                advance();
+                formals.insert(treenode(current_token.value));
+                break;
+
+            }
+
+            else {
+                // Error
+                if (!tokenIsVariable(current_token)) { return treenode("ERROR."); }
+
+                formals.insert(treenode(current_token.value));
+
+            }
+            
+        }
+
+    // Skip )
+    advance();
+
+    return formals;
 
 }
 

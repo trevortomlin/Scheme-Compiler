@@ -27,14 +27,16 @@ class parser{
         std::set<std::string> variables;
 
         void advance();
-        
+
+        treenode parse_define();
+        treenode parse_define_formals();
         treenode parse_expression();
         treenode parse_variable(token t);
         treenode parse_literal(token t);
         treenode parse_procedure_call();
         treenode parse_lambda_expression();
         treenode parse_lambda_formals();
-        treenode parse_lambda_body();
+        treenode parse_body();
         treenode parse_conditional();
         treenode parse_assignment();
         treenode parse_derived_expression();
