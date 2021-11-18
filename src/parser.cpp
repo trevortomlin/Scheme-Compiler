@@ -95,6 +95,9 @@ treenode parser::parse_expression(){
 
         //〈lambda expression〉 −→ (lambda 〈formals〉 〈body〉
         if (next_token.value == "lambda") { return parse_lambda_expression(); }
+
+        //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
+        if (next_token.value == "if") { return parse_conditional(); }
         
         //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
         //if (next_token.value == "lambda") { return parse_lambda_expression(current_token); }
@@ -123,6 +126,30 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN."); }
+
+}
+
+treenode parser::parse_conditional() {
+
+    // Skip ( if
+    advance();
+    advance();
+
+    treenode cond = treenode("cond");
+
+    cond.insert(parse_expression());
+    advance();
+    cond.insert(parse_expression());
+    advance();
+
+    if (!current_token.type == token::TOKEN_R_PAREN) {
+
+        cond.insert(parse_expression());
+        advance();
+
+    }
+
+    return cond;
 
 }
 
