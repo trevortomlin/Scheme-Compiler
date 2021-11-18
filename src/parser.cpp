@@ -142,7 +142,7 @@ treenode parser::parse_conditional() {
     cond.insert(parse_expression());
     advance();
 
-    if (!current_token.type == token::TOKEN_R_PAREN) {
+    if (current_token.type != token::TOKEN_R_PAREN) {
 
         cond.insert(parse_expression());
         advance();
