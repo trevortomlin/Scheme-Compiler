@@ -98,12 +98,9 @@ treenode parser::parse_expression(){
 
         //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
         if (next_token.value == "if") { return parse_conditional(); }
-        
-        //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
-        //if (next_token.value == "lambda") { return parse_lambda_expression(current_token); }
 
         //〈assignment〉 −→ (set! 〈variable〉 〈expression〉)
-        //if (next_token.value == "lambda") { return parse_lambda_expression(current_token); }
+        if (next_token.value == "set!") { return parse_assignment(); }
 
         return parse_procedure_call();
 
@@ -126,6 +123,27 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN."); }
+
+}
+
+treenode parser::parse_assignment() {
+
+    treenode assign = treenode("assign");
+
+    // Skip ( set!
+    advance();
+    advance();
+
+    assign.insert(treenode(current_token.value));
+
+    advance();
+
+    assign.insert(parse_expression());
+
+    advance();
+
+    return assign;
+
 
 }
 
