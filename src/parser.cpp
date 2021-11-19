@@ -81,7 +81,6 @@ treenode parser::parse_expression(){
 
     // Literal Quotation 
     //〈quotation〉 −→ ’〈datum〉
-    // current_token.type == token::TOKEN_L_PAREN && next_token.value == "quote" ||
     else if (current_token.type == token::TOKEN_SINGLE_QUOTE) {
 
         return parse_literal(current_token);
@@ -102,15 +101,12 @@ treenode parser::parse_expression(){
         //〈assignment〉 −→ (set! 〈variable〉 〈expression〉)
         if (next_token.value == "set!") { return parse_assignment(); }
 
+        //〈macro use〉 −→ (〈keyword〉 〈datum〉*)
+        if (next_token.type == token::TOKEN_IDENTIFIER) { return parse_macro_use(); }
+
         return parse_procedure_call();
 
     }
-
-    // else if (current_token.type == token::TOKEN_L_PAREN || current_token.type == token::TOKEN_R_PAREN) {
-
-    //         return treenode(current_token.value); 
-
-    // }
 
     // Literal Self-evaluating
     else if (current_token.type == token::TOKEN_BOOLEAN ||
@@ -123,6 +119,27 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN."); }
+
+}
+
+treenode parser::parse_macro_use() {
+
+    treenode mu = treenode("macro-use");
+
+    advance();
+
+    mu.insert(treenode(current_token.value));
+
+    advance();
+
+    while (current_token.type != token::TOKEN_R_PAREN) {
+
+        mu.insert(parse_datum(current_token));
+        advance();
+
+    }
+
+    return mu;
 
 }
 
