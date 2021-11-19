@@ -219,12 +219,17 @@ treenode parser::parse_lambda_formals(){
     treenode formals = treenode("formals");
 
     // Error
-    if (current_token.type != token::TOKEN_L_PAREN) { std::cout << "Error." << std::endl; return treenode("ERROR."); }
+    // if (current_token.type != token::TOKEN_L_PAREN) { std::cout << "Error." << std::endl; return treenode("ERROR."); }
 
     // Skip (
-    advance();
+    //〈formals〉−→〈variable〉
+    if (current_token.type != token::TOKEN_L_PAREN) { 
+        formals.insert(treenode(current_token.value));
+        advance(); 
+        return formals;
+    }
 
-    while (next_token.type != token::TOKEN_R_PAREN) {
+    while (current_token.type != token::TOKEN_R_PAREN) {
 
             advance();
 
@@ -259,16 +264,16 @@ treenode parser::parse_lambda_formals(){
 
 treenode parser::parse_body(){
 
-    //〈body〉 −→ 〈definition〉* 〈sequence
+    //〈body〉 −→ 〈definition〉* 〈sequence〉
     treenode body = treenode("body");
 
     // definition
+    // !!! Should be while loop here !!!
     if (current_token.type == token::TOKEN_L_PAREN &&
         next_token.value == "define") {
 
             advance();
             body.insert(parse_define());
-
 
     }
 
