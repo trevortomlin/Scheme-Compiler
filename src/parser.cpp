@@ -76,8 +76,10 @@ parser::~parser(){
 
 treenode parser::parse_expression(){
 
+    //std::cout << current_token.value << std::endl;
+
     // Variable Node
-    if (current_token.type == token::TOKEN_IDENTIFIER && !tokenIsVariable(current_token)) { return treenode(current_token.value); }
+    if (current_token.type == token::TOKEN_IDENTIFIER && tokenIsVariable(current_token)) { return treenode(current_token.value); }
 
     // Literal Quotation 
     //〈quotation〉 −→ ’〈datum〉
@@ -118,7 +120,7 @@ treenode parser::parse_expression(){
 
     }
 
-    else{ return treenode("NOT VALID TOKEN."); }
+    else{ return treenode("NOT VALID TOKEN. '" + current_token.value + "'"); }
 
 }
 
@@ -192,7 +194,7 @@ treenode parser::parse_conditional() {
 bool parser::tokenIsVariable(token t) {
 
     const bool is_in = variables.find(t.value) != variables.end();
-    return is_in;
+    return !is_in;
 
 }
 
@@ -206,7 +208,7 @@ treenode parser::parse_lambda_expression() {
 
     lambda.insert(parse_lambda_formals());
 
-    advance();
+    //advance();
 
     lambda.insert(parse_body());
 
@@ -267,15 +269,43 @@ treenode parser::parse_body(){
     //〈body〉 −→ 〈definition〉* 〈sequence〉
     treenode body = treenode("body");
 
-    // definition
-    // !!! Should be while loop here !!!
+    // definition*
+    // should have while loop.
     if (current_token.type == token::TOKEN_L_PAREN &&
         next_token.value == "define") {
 
             advance();
             body.insert(parse_define());
 
+            // treenode define = treenode("define");
+            
+            // // Skip (
+            // advance();
+
+            // while (current_token.type != token::TOKEN_R_PAREN) {
+            //     define.insert(parse_define());
+            //     advance();
+            // }
+
+            // // Skip )
+            // advance();
+
+            // body.insert(define);
+
     }
+
+    advance();
+
+    //〈sequence〉 −→ 〈command〉* 〈expression)
+    while(current_token.type != token::TOKEN_R_PAREN) {
+
+        body.insert(parse_expression());
+        advance();
+
+    }
+
+    // Skip )
+    advance();
 
     return body;
 
@@ -283,7 +313,7 @@ treenode parser::parse_body(){
 
 treenode parser::parse_define() {
 
-    if (current_token.value != "define") { return treenode("ERROR."); }
+    if (current_token.value != "define") { return treenode("ERROR. '" + current_token.value + "'"); }
 
     treenode define = treenode("define");
 
@@ -310,6 +340,7 @@ treenode parser::parse_define() {
 
     }
 
+    // This is incorrect.
     // (begin 〈definition〉*)
     else if (current_token.type != token::TOKEN_R_PAREN) {
 
