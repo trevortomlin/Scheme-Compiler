@@ -124,6 +124,96 @@ treenode parser::parse_expression(){
 
 }
 
+treenode parser::parse_macro_block() {
+
+    //〈macro block〉−→ (let-syntax (〈syntax spec〉*) 〈body〉)
+    // (letrec-syntax (〈syntax spec〉*) 〈body〉)
+
+    if (current_token.type != token::TOKEN_L_PAREN || next_token.value == "let-syntax") { return treenode("Error. Macro Block."); }
+
+    treenode mb = treenode("macro-block")
+
+    // Skip ( let-syntax (
+    advance();
+    advance();
+    advance();
+
+
+
+}
+
+treenode parser::parse_syntax_spec() {
+
+    //〈syntax spec〉 −→ (〈keyword〉 〈transformer spec〉)
+
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Syntax Spec."); }
+
+    treenode ss = treenode("syntax-spec");
+
+    //  skip (
+    advance();
+
+    //  keyword
+    ss.insert(treenode(current_token.value));
+
+    // transformer spec
+    ss.insert(parse_transformer_spec());
+
+    // skip )
+    advance();
+
+    return ss;
+
+
+}
+
+treenode parser::parse_transformer_spec() {
+
+    // 〈transformer spec〉 −→ (syntax-rules (〈identifier〉*) 〈syntax rule〉*)
+
+    if (current_token.type != token::TOKEN_L_PAREN || next_token.value == "syntax-rules") { return treenode("Error. Transformer Specs."); }
+
+    treenode ts = treenode("transformer-spec");  
+
+    // Skip ( syntax-rules
+    advance();
+    advance();
+    
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Transformer Specs."); }
+
+    // Skip (
+    advance();
+
+    // Identifiers
+    while (current_token.type != token::TOKEN_R_PAREN) {
+
+        if (current_token.type != token::TOKEN_IDENTIFIER) { return treenode("Error. Transformer Specs."); }
+
+        ts.insert(treenode(current_token.value));
+        advance();
+
+    }
+
+    ts.insert(parse_syntax_rules());
+
+    return ts;
+
+}
+
+treenode parser::parse_syntax_rules() {
+
+    //〈syntax rule〉 −→ (〈pattern〉 〈template〉)
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Syntax Rules."); }
+
+    // skip (
+    advance();
+
+    
+
+
+
+}
+
 treenode parser::parse_macro_use() {
 
     treenode mu = treenode("macro-use");
@@ -270,8 +360,7 @@ treenode parser::parse_body(){
     treenode body = treenode("body");
 
     // definition*
-    // should have while loop.
-    if (current_token.type == token::TOKEN_L_PAREN &&
+    while (current_token.type == token::TOKEN_L_PAREN &&
         next_token.value == "define") {
 
             advance();
