@@ -43,7 +43,9 @@ class parser{
         treenode parse_macro_use();
         treenode parse_macro_block();
         treenode parse_syntax_spec();
-        treenode parse_syntax_rule();
+        treenode parse_syntax_rules();
+        treenode parse_pattern();
+        treenode parse_template();
         treenode parse_datum(token t);
         treenode parse_compound_datum(token t);
 

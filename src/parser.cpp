@@ -199,6 +199,48 @@ treenode parser::parse_syntax_rules() {
     // skip (
     advance();
 
+    treenode sr = treenode("syntax-rules");
+
+    sr.insert(parse_pattern());
+
+
+
+}
+
+treenode parser::parse_template(){
+
+    /*
+    〈template〉 −→ 〈pattern identifier〉
+     | (〈template element〉*)
+     | (〈template element〉+ . 〈template〉)
+     | #(〈template element〉*)
+     | 〈template datum〉
+    */
+
+    treenode template = treenode("template");
+
+    //〈pattern identifier〉
+    if (current_token.value == "...") {
+
+        template.insert(treenode(current_token.value));
+
+    }
+
+    else if (current_token.type == token::TOKEN_L_PAREN) {}
+
+    else if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {}
+
+    // Template datum (Pattern datum)
+    else if (current_token.type == token::TOKEN_BOOLEAN ||
+        current_token.type == token::TOKEN_NUMBER ||
+        current_token.type == token::TOKEN_CHARACTER ||
+        current_token.type == token::TOKEN_STRING) {
+
+        template.insert(treenode(current_token.value));
+
+    }
+
+
 }
 
 treenode parser::parse_pattern(){
