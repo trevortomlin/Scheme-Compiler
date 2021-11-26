@@ -7,9 +7,8 @@ treenode root("root");
 treenode parser::parse(){
 
     while(current_token.type != token::TOKEN_EOF){
-        //parse_expression();
+
         treenode node = parse_expression();
-        //std::cout << node.value << std::endl;
 
         root.insert(node);
 
@@ -31,14 +30,8 @@ void parser::advance(){
 
 parser::parser(lexer *_lex) : lex(_lex) {
 
-    //lex = _lex;
-
     current_token = lex->advance();
     next_token = lex->advance();
-
-    //std::cout << "(" << current_token.type << ", " << "\"" << current_token.value << "\")" << std::endl;
-
-    //std::cout << root.value << std::endl;
 
     // Might want to move this to another location eventually.
 
@@ -75,8 +68,6 @@ parser::~parser(){
 }
 
 treenode parser::parse_expression(){
-
-    //std::cout << current_token.value << std::endl;
 
     // Variable Node
     if (current_token.type == token::TOKEN_IDENTIFIER && tokenIsVariable(current_token)) { return treenode(current_token.value); }
@@ -208,10 +199,6 @@ treenode parser::parse_syntax_rules() {
     // skip (
     advance();
 
-
-
-
-
 }
 
 treenode parser::parse_pattern(){
@@ -236,13 +223,70 @@ treenode parser::parse_pattern(){
     }
 
     // (〈pattern〉*) | (〈pattern〉+ . 〈pattern〉) | (〈pattern〉* 〈pattern〉 〈ellipsis〉)
-    if (current_token.type == token::TOKEN_L_PAREN) {}
+    else if (current_token.type == token::TOKEN_L_PAREN) {
+
+        while (current_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+
+            // (〈pattern〉+ . 〈pattern〉)
+            if (current_token.type == token::TOKEN_PERIOD) {
+
+                // Error
+                if (pattern.children.empty()) { return treenode("ERROR. Pattern."); }
+
+                pattern.insert(treenode(current_token.value));
+                advance();
+                pattern.insert(parse_pattern());
+                break;
+
+            }
+
+            // (〈pattern〉* 〈pattern〉 〈ellipsis〉)
+            else if (current_token.value == "...") {
+
+                pattern.insert(treenode(current_token.value));
+                advance();
+                break;
+
+            }
+
+            else {
+
+                pattern.insert(parse_pattern());
+
+            }   
+        }
+    }   
 
     // #(〈pattern〉*) | #(〈pattern〉* 〈pattern〉 〈ellipsis〉)
-    if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {}
+    else if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {
+
+        while (current_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+
+            // #(〈pattern〉* 〈pattern〉 〈ellipsis〉)
+            if (current_token.value == "...") {
+
+                if (pattern.children.size() < 2) { return treenode("ERROR. Pattern."); }
+
+                pattern.insert(treenode(current_token.value));
+                advance();
+                break;
+
+            }
+
+            else {
+
+                pattern.insert(parse_pattern());
+
+            }   
+        }
+    }
 
     // Pattern datum
-    if (current_token.type == token::TOKEN_BOOLEAN ||
+    else if (current_token.type == token::TOKEN_BOOLEAN ||
         current_token.type == token::TOKEN_NUMBER ||
         current_token.type == token::TOKEN_CHARACTER ||
         current_token.type == token::TOKEN_STRING) {
@@ -386,7 +430,7 @@ treenode parser::parse_lambda_formals(){
 
             }
             
-        }
+    }
 
     // Skip )
     advance();
