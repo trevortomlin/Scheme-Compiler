@@ -11,10 +11,6 @@ lexer::lexer(const char *file){
     std::ifstream src_code(file);
 
     assert(src_code.is_open());
-
-    // Doesn't work with whitspace currently.
-    // std::copy(std::istream_iterator<char>(src_code), std::istream_iterator<char>(),
-    // std::back_inserter(*charVec));
     
     char current_char;
 
@@ -33,8 +29,6 @@ lexer::lexer(const char *file){
 }
 
 token lexer::advance(){
-
-    //std::cout << c << std::endl;
 
     int state = 0;
 
@@ -57,7 +51,6 @@ token lexer::advance(){
                 else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c));}
                 else if (c == '\'') {pos++; return token(token::TOKEN_SINGLE_QUOTE, std::string(1, c));}
                 else if (c == ',') {state = 5; break;}
-                //else if (c == '.') {pos++; return token(token::TOKEN_PERIOD, std::string(1, c));}
                 else if (c == '`') {pos++; return token(token::TOKEN_BACK_QUOTE, std::string(1, c));}
 
                 break;
@@ -100,7 +93,6 @@ token lexer::advance(){
                     case 'o':
                     case 'd':
                     case 'x': state = 4; break;
-                    //pos += 2; return token(token::TOKEN_CHARACTER, "#" + std::string(1, next_char)); break;
                 }
 
                 break;
@@ -141,10 +133,6 @@ token lexer::advance(){
 
 
                 return token(token::TOKEN_NUMBER, prefix + parseNumber(pos));
-                
-                //pos++;
-                //
-                break;
 
             }
 
@@ -174,26 +162,6 @@ token lexer::advance(){
 
                 }
 
-
-                // if (c == '.' && isDelimiter(next_char)){
-                //     pos++; 
-                //     return token(token::TOKEN_PERIOD, std::string(1, c));
-                // }
-                // // Fix this. It is ugly.
-                // // else if ((c == '.') && (next_char == '.') && (char_2nd == '.') && (isDelimiter(char_3rd))){
-                // //     pos += 3; 
-                // //     return token(token::TOKEN_IDENTIFIER, "...");}
-
-                // bool ellipse = true;
-                
-                // for (int i = 1; i <= 3; ++i){
-
-                //     char ahead = charVec->at(pos + i);
-                //     ellipse &= (ahead == '.');
-                // }   
-
-                // if (ellipse){return token(token::TOKEN_IDENTIFIER, "...";}
-
                 if (next_char == ' ') {pos++; return token(token::TOKEN_IDENTIFIER, std::string(1, c));}
 
                 else {state = 4;}
@@ -204,30 +172,7 @@ token lexer::advance(){
         }
     
     }
-    //std::cout << c << std::endl;
 
-    // if (isspace(c)){
-
-    //     // pos++;
-    //     // return;
-
-    // }
-
-    // if (isPunctuator(c)){
-
-    //     pos++;
-    //     return(token(token::TOKEN_PUNCTUATOR, std::string(1, c)));
-
-    // }
-
-    // if (isLiteral(c)){
-
-
-
-    // }
-
-    // //return(token(token::TOKEN_PUNCTUATOR, std::string(1, c));
-    // pos++;
     return token(token::TOKEN_EOF, "EOF");
 
 }
@@ -350,10 +295,6 @@ std::string lexer::parseIdentifier(int &pos){
 
     char current_char = charVec->at(pos);
 
-    //id += current_char; 
-
-    //char current_char = charVec->at(pos + offset);
-
     while (isalnum(current_char) || extendedCharacter.find(current_char) != std::string::npos){
 
         id += current_char;
@@ -363,8 +304,6 @@ std::string lexer::parseIdentifier(int &pos){
     }
 
     pos += offset;
-
-    //std::cout << id << std::endl;
 
     return id;
 
@@ -385,10 +324,6 @@ std::string lexer::parseNumber(int &pos){
 
     }
 
-    //std::cout << number << std::endl;
-
     return number;
 
 }
-
-//std::string lexer::parseLiteral(int &pos){}

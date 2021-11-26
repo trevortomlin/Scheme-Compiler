@@ -208,9 +208,50 @@ treenode parser::parse_syntax_rules() {
     // skip (
     advance();
 
-    
 
 
+
+
+}
+
+treenode parser::parse_pattern(){
+
+    /* 
+    〈pattern〉 −→ 〈pattern identifier〉
+     | (〈pattern〉*)
+     | (〈pattern〉+ . 〈pattern〉)
+     | (〈pattern〉* 〈pattern〉 〈ellipsis〉)
+     | #(〈pattern〉*)
+     | #(〈pattern〉* 〈pattern〉 〈ellipsis〉)
+     | 〈pattern datum〉
+    */
+
+    treenode pattern = treenode("pattern");
+
+    // Pattern identifier
+    if (current_token.value == "...") {
+
+        pattern.insert(treenode(current_token.value));
+
+    }
+
+    // (〈pattern〉*) | (〈pattern〉+ . 〈pattern〉) | (〈pattern〉* 〈pattern〉 〈ellipsis〉)
+    if (current_token.type == token::TOKEN_L_PAREN) {}
+
+    // #(〈pattern〉*) | #(〈pattern〉* 〈pattern〉 〈ellipsis〉)
+    if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {}
+
+    // Pattern datum
+    if (current_token.type == token::TOKEN_BOOLEAN ||
+        current_token.type == token::TOKEN_NUMBER ||
+        current_token.type == token::TOKEN_CHARACTER ||
+        current_token.type == token::TOKEN_STRING) {
+
+        pattern.insert(treenode(current_token.value));
+
+    }
+
+    return pattern;
 
 }
 
@@ -365,21 +406,6 @@ treenode parser::parse_body(){
 
             advance();
             body.insert(parse_define());
-
-            // treenode define = treenode("define");
-            
-            // // Skip (
-            // advance();
-
-            // while (current_token.type != token::TOKEN_R_PAREN) {
-            //     define.insert(parse_define());
-            //     advance();
-            // }
-
-            // // Skip )
-            // advance();
-
-            // body.insert(define);
 
     }
 
