@@ -120,16 +120,27 @@ treenode parser::parse_macro_block() {
     //〈macro block〉−→ (let-syntax (〈syntax spec〉*) 〈body〉)
     // (letrec-syntax (〈syntax spec〉*) 〈body〉)
 
-    if (current_token.type != token::TOKEN_L_PAREN || next_token.value == "let-syntax") { return treenode("Error. Macro Block."); }
+    if (current_token.type != token::TOKEN_L_PAREN 
+        || next_token.value == "let-syntax"
+        || next_token.value == "letrc-syntax") { return treenode("Error. Macro Block."); }
 
     treenode mb = treenode("macro-block")
 
-    // Skip ( let-syntax (
-    advance();
+    // Skip ( let-syntax
     advance();
     advance();
 
+    while (current_token.type == token::TOKEN_L_PAREN){
+    
+        mb.insert(parse_syntax_spec());
 
+        advance();
+
+    }
+
+    mb.insert(parse_body);
+
+    return mb;
 
 }
 
@@ -154,7 +165,6 @@ treenode parser::parse_syntax_spec() {
     advance();
 
     return ss;
-
 
 }
 
@@ -185,7 +195,12 @@ treenode parser::parse_transformer_spec() {
 
     }
 
-    ts.insert(parse_syntax_rules());
+    // 〈syntax rule〉*)
+    while (current_token.type != token::TOKEN_R_PAREN) {
+
+        ts.insert(parse_syntax_rules());
+
+    }
 
     return ts;
 
@@ -203,7 +218,12 @@ treenode parser::parse_syntax_rules() {
 
     sr.insert(parse_pattern());
 
+    sr.insert(parse_template());
 
+    // Skip )
+    advance();
+
+    return sr;
 
 }
 
@@ -226,9 +246,71 @@ treenode parser::parse_template(){
 
     }
 
-    else if (current_token.type == token::TOKEN_L_PAREN) {}
+    // (〈template element〉*) |
+    // (〈template element〉+ . 〈template〉)
+    else if (current_token.type == token::TOKEN_L_PAREN) {
 
-    else if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {}
+        while (current_token.type != token::TOKEN_R_PAREN){
+
+            advance();
+
+            if (next_token.value == "...") {
+
+                if (template.children.empty()) { return treenode("Error template element."); }
+
+                template.insert(parse_template());
+                template.insert(treenode(current_token.value));
+
+                advance();
+
+            }
+
+            // (〈template element〉+ . 〈template〉)
+            else if (current_token.type == token::TOKEN_PERIOD) {
+
+                if (template.children.empty()) { return treenode("Error template element."); }
+
+                template.insert(treenode(current_token.value));
+                advance();
+                template.insert(treenode(current_token.value));
+                advance();
+
+            }
+
+            else {
+
+                template.insert(parse_template());
+
+            }
+
+        }
+
+    }
+
+    // #(〈template element〉*)
+    else if (current_token.type == token::TOKEN_VECTOR_CONSTANT) {
+
+        while(current_token.type != token::TOKEN_R_PAREN) {
+
+            advance();
+
+            if (next_token.value == "...") {
+
+                template.insert(parse_template());
+                template.insert(next_token.value);
+                advance()
+
+            }
+
+            else {
+
+                template.insert(parse_template());
+
+            }
+
+        }
+
+    }
 
     // Template datum (Pattern datum)
     else if (current_token.type == token::TOKEN_BOOLEAN ||
@@ -240,6 +322,7 @@ treenode parser::parse_template(){
 
     }
 
+    return template;
 
 }
 
