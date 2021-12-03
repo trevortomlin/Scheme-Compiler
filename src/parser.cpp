@@ -80,24 +80,95 @@ treenode parser::parse_expression(){
 
     }
 
+    // quasiquote
+    else if (current_token.type == token::TOKEN_BACK_QUOTE) {}
+
     else if (current_token.type == token::TOKEN_L_PAREN) {
 
         //〈quotation〉 −→ (quote 〈datum〉)
         if (next_token.value == "quote") { return parse_literal(current_token); }
 
         //〈lambda expression〉 −→ (lambda 〈formals〉 〈body〉
-        if (next_token.value == "lambda") { return parse_lambda_expression(); }
+        else if (next_token.value == "lambda") { return parse_lambda_expression(); }
 
         //〈conditional〉 −→ (if 〈test〉 〈consequent〉 〈alternate〉)
-        if (next_token.value == "if") { return parse_conditional(); }
+        else if (next_token.value == "if") { return parse_conditional(); }
 
         //〈assignment〉 −→ (set! 〈variable〉 〈expression〉)
-        if (next_token.value == "set!") { return parse_assignment(); }
+        else if (next_token.value == "set!") { return parse_assignment(); }
+
+        // derived expressions
+        else if (next_token.value == "cond") { 
+
+                // (cond 〈cond clause〉+) |
+                // (cond 〈cond clause〉* (else 〈sequence〉))
+
+                // Skip (cond
+                advance();
+                advance();
+
+                treenode cond = treenode("cond");
+
+                do {
+
+                    if (current_token.type == token::TOKEN_L_PAREN &&
+                        next_token.value == "else") {
+                        
+                        // Skip (
+                        advance();
+                        cond.insert(treenode(current_token.value));
+                        advance();
+                        cond.insert(parse_expression());
+                        advance();
+                        return cond;
+
+                    }
+
+                    else {
+
+                        cond.insert(parse_cond_clause());
+
+                    }
+
+
+                } while(current_token.type != token::TOKEN_R_PAREN);
+
+
+                if (cond.children.empty()) { return treenode("Error. Cond.")}
+
+                return cond;
+
+        }
+
+        else if (next_token.value == "case") {}
+
+        else if (next_token.value == "and") {}
+
+        else if (next_token.value == "or") {}
+
+        else if (next_token.value == "let") {}
+
+        else if (next_token.value == "let*") {}
+
+        else if (next_token.value == "letrec") {}
+
+        else if (next_token.value == "begin") {}
+
+        else if (next_token.value == "do") {}
+
+        else if (next_token.value == "delay") {}
+
+        else if (next_token.value == "quasiquote") {}
 
         //〈macro use〉 −→ (〈keyword〉 〈datum〉*)
-        if (next_token.type == token::TOKEN_IDENTIFIER) { return parse_macro_use(); }
+        else if (next_token.type == token::TOKEN_IDENTIFIER) { return parse_macro_use(); }
 
-        return parse_procedure_call();
+
+        else {
+
+            return parse_procedure_call();
+
+        }
 
     }
 
@@ -112,6 +183,41 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN. '" + current_token.value + "'"); }
+
+}
+
+treenode parser::parse_cond_clause() {
+
+    treenode cc = treenode("cond-clause");
+
+
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Conditional Clause."); }
+
+    // Skip (
+    advance();
+
+    cc.insert(parse_expression());
+
+    // (〈test〉)
+    if (current_token.type == token::TOKEN_R_PAREN) { return cc; }
+
+    // (〈test〉 => 〈recipient〉)
+    else if (current_token.value == "=>") {
+
+        cc.insert(treenode(current_token.value));
+        advance();
+        cc.insert(parse_expression());
+        return cc;
+
+    }
+
+    //〈cond clause〉 −→ (〈test〉 〈sequence〉)
+    else {
+
+        cc.insert(parse_expression());
+        return cc;
+
+    }
 
 }
 

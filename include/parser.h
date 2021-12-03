@@ -48,6 +48,7 @@ class parser{
         treenode parse_template();
         treenode parse_datum(token t);
         treenode parse_compound_datum(token t);
+        treenode parse_cond_clause();
 
 };
 
