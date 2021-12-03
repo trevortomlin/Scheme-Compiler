@@ -136,15 +136,36 @@ treenode parser::parse_expression(){
 
                 if (cond.children.empty()) { return treenode("Error. Cond.")}
 
+                // Skip )
+                advance();
+
                 return cond;
 
         }
 
         else if (next_token.value == "case") {}
 
-        else if (next_token.value == "and") {}
+        else if (next_token.value == "and" ||
+                 next_token.value == "or") {
 
-        else if (next_token.value == "or") {}
+            treenode rel_node = treenode("and");
+
+            // Skip (and
+            advance();
+            advance();
+
+            while (current_token.type != token::TOKEN_R_PAREN) {
+
+                rel_node.insert(parse_expression());
+
+            }
+
+            // Skip )
+            advance();
+
+            return rel_node;
+
+        }
 
         else if (next_token.value == "let") {}
 
@@ -152,11 +173,45 @@ treenode parser::parse_expression(){
 
         else if (next_token.value == "letrec") {}
 
-        else if (next_token.value == "begin") {}
+        else if (next_token.value == "begin") {
+
+            // Skip ( begin
+            advance();
+            advance();
+
+            treenode begin = treenode("begin");
+
+            while (current_token.type != token::TOKEN_R_PAREN) {
+
+                begin.insert(parse_expression());
+
+            }
+
+            // Skip )
+            advance();
+
+            return begin;
+
+        }
 
         else if (next_token.value == "do") {}
 
-        else if (next_token.value == "delay") {}
+        else if (next_token.value == "delay") {
+
+            // Skip (delay
+            advance();
+            advance();
+
+            treenode delay = treenode("delay");
+
+            delay.insert(parse_expression());
+
+            // Skip )
+            advance();
+
+            return delay;
+
+        }
 
         else if (next_token.value == "quasiquote") {}
 
