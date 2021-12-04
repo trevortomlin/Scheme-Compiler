@@ -143,7 +143,60 @@ treenode parser::parse_expression(){
 
         }
 
-        else if (next_token.value == "case") {}
+        else if (next_token.value == "case") {
+
+            treenode case_node = treenode("case");
+
+            // Skip ( case
+            advance();
+            advance();
+
+            case_node.insert(parse_expression());
+
+            // Skip expression
+            advance();
+
+            // (case 〈expression〉〈case clause〉+)
+            // case 〈expression〉〈case clause〉* (else 〈sequence〉))
+    
+            while (current_token.type != token::TOKEN_R_PAREN) {
+
+
+                if (current_token.type == token::TOKEN_L_PAREN &&
+                    next_token.value == "else"){
+                        
+                    // Skip ( else
+                    advance();
+                    advance();  
+
+                    // Parse Sequence
+                    while (current_token.type != token::TOKEN_R_PAREN) {
+
+                        case_node.insert(parse_expression());
+                        advance();
+
+                    }
+
+                    // Skip ))
+                    advance();
+                    advance();
+
+                    return case_node;
+
+                }
+
+                else {
+
+                    case_node.insert(parse_case_clause());
+
+                }
+
+
+            }
+
+            return case_node;
+
+        }
 
         else if (next_token.value == "and" ||
                  next_token.value == "or") {
@@ -238,6 +291,46 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN. '" + current_token.value + "'"); }
+
+}
+
+treenode parser::parse_case_clause() {
+
+    // 〈case clause〉 −→ ((〈datum〉*) 〈sequence〉)
+
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Case Clause."); }
+
+    // Skip (
+    advance();
+
+     if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Case Clause."); }
+
+    // Skip (
+    advance();
+
+    treenode case_clause = treenode("case-clause");
+
+    while (current_token.type != token::TOKEN_R_PAREN) {
+
+        case_clause.insert(parse_datum(current_token));
+        advance();
+
+    }
+
+    // Skip )
+    advance();
+
+    while (current_token.type != token::TOKEN_R_PAREN) {
+
+        case_clause.insert(parse_expression());
+        advance();
+
+    }
+
+    // Skip )
+    advance();
+
+    return case_clause;
 
 }
 

@@ -49,7 +49,7 @@ class parser{
         treenode parse_datum(token t);
         treenode parse_compound_datum(token t);
         treenode parse_cond_clause();
-
+        treenode parse_case_clause();
 };
 
 #endif 
