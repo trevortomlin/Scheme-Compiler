@@ -134,7 +134,7 @@ treenode parser::parse_expression(){
                 } while(current_token.type != token::TOKEN_R_PAREN);
 
 
-                if (cond.children.empty()) { return treenode("Error. Cond.")}
+                if (cond.children.empty()) { return treenode("Error. Cond."); }
 
                 // Skip )
                 advance();
@@ -241,7 +241,7 @@ treenode parser::parse_expression(){
 
                 }
 
-                let.insert(current_token);
+                let.insert(treenode(current_token.value));
                 let.insert(parse_expression());
 
                 advance();
@@ -416,7 +416,7 @@ treenode parser::parse_macro_block() {
         || next_token.value == "let-syntax"
         || next_token.value == "letrc-syntax") { return treenode("Error. Macro Block."); }
 
-    treenode mb = treenode("macro-block")
+    treenode mb = treenode("macro-block");
 
     // Skip ( let-syntax
     advance();
@@ -430,7 +430,7 @@ treenode parser::parse_macro_block() {
 
     }
 
-    mb.insert(parse_body);
+    mb.insert(parse_body());
 
     return mb;
 
@@ -529,12 +529,12 @@ treenode parser::parse_template(){
      | 〈template datum〉
     */
 
-    treenode template = treenode("template");
+    treenode template_node = treenode("template");
 
     //〈pattern identifier〉
     if (current_token.value == "...") {
 
-        template.insert(treenode(current_token.value));
+        template_node.insert(treenode(current_token.value));
 
     }
 
@@ -548,10 +548,10 @@ treenode parser::parse_template(){
 
             if (next_token.value == "...") {
 
-                if (template.children.empty()) { return treenode("Error template element."); }
+                if (template_node.children.empty()) { return treenode("Error template element."); }
 
-                template.insert(parse_template());
-                template.insert(treenode(current_token.value));
+                template_node.insert(parse_template());
+                template_node.insert(treenode(current_token.value));
 
                 advance();
 
@@ -560,18 +560,18 @@ treenode parser::parse_template(){
             // (〈template element〉+ . 〈template〉)
             else if (current_token.type == token::TOKEN_PERIOD) {
 
-                if (template.children.empty()) { return treenode("Error template element."); }
+                if (template_node.children.empty()) { return treenode("Error template element."); }
 
-                template.insert(treenode(current_token.value));
+                template_node.insert(treenode(current_token.value));
                 advance();
-                template.insert(treenode(current_token.value));
+                template_node.insert(treenode(current_token.value));
                 advance();
 
             }
 
             else {
 
-                template.insert(parse_template());
+                template_node.insert(parse_template());
 
             }
 
@@ -588,15 +588,15 @@ treenode parser::parse_template(){
 
             if (next_token.value == "...") {
 
-                template.insert(parse_template());
-                template.insert(next_token.value);
-                advance()
+                template_node.insert(parse_template());
+                template_node.insert(next_token.value);
+                advance();
 
             }
 
             else {
 
-                template.insert(parse_template());
+                template_node.insert(parse_template());
 
             }
 
@@ -610,11 +610,11 @@ treenode parser::parse_template(){
         current_token.type == token::TOKEN_CHARACTER ||
         current_token.type == token::TOKEN_STRING) {
 
-        template.insert(treenode(current_token.value));
+        template_node.insert(treenode(current_token.value));
 
     }
 
-    return template;
+    return template_node;
 
 }
 
