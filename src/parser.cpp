@@ -201,7 +201,7 @@ treenode parser::parse_expression(){
         else if (next_token.value == "and" ||
                  next_token.value == "or") {
 
-            treenode rel_node = treenode("and");
+            treenode rel_node = treenode(next_token.value);
 
             // Skip (and
             advance();
@@ -220,7 +220,46 @@ treenode parser::parse_expression(){
 
         }
 
-        else if (next_token.value == "let") {}
+        else if (next_token.value == "let") {
+
+            // Skip ( let
+            advance();
+            advance();
+
+            if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Let."); }
+
+            // Skip (
+            advance();
+
+            treenode let = treenode("let");
+
+            while (current_token.type != token::TOKEN_R_PAREN) {
+                
+                if (!tokenIsVariable(current_token)) {
+
+                    return treenode("Error. Let.");
+
+                }
+
+                let.insert(current_token);
+                let.insert(parse_expression());
+
+                advance();
+                advance();
+
+            }
+
+            // Skip )
+            advance();
+
+            let.insert(parse_body());
+
+            // Skip )
+            advance();
+
+            return let;
+
+        }
 
         else if (next_token.value == "let*") {}
 
@@ -270,7 +309,6 @@ treenode parser::parse_expression(){
 
         //〈macro use〉 −→ (〈keyword〉 〈datum〉*)
         else if (next_token.type == token::TOKEN_IDENTIFIER) { return parse_macro_use(); }
-
 
         else {
 
