@@ -228,11 +228,11 @@ treenode parser::parse_expression(){
             advance();
 
             // let or let* or letrec
-            treenode let = treenode(current_token.val);
+            treenode let = treenode(current_token.value);
 
             // (let 〈variable〉 (〈binding spec〉*) 〈body〉)
-            if (current_token.val == "let" && tokenIsVariable(next_token)) {
-                let.insert(next_token);
+            if (current_token.value == "let" && tokenIsVariable(next_token)) {
+                let.insert(treenode(next_token.value));
                 advance();
                 advance();
             }
@@ -291,7 +291,65 @@ treenode parser::parse_expression(){
 
         }
 
-        else if (next_token.value == "do") {}
+        else if (next_token.value == "do") {
+            
+            // Skip (do
+            advance();
+            advance();
+
+            if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Do."); }
+
+            // Skip (
+            advance();
+
+            treenode do_node("do");
+
+            while(current_token.type != token::TOKEN_R_PAREN) {
+
+                do_node.insert(parse_iteration_spec);
+                advance();
+
+            }
+
+            // Skip )
+            advance();
+
+            if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Do."); }
+
+            // Skip (
+            advance();
+
+            do_node.insert(parse_expression());
+
+            advance();
+
+            if (current_token.type != token::TOKEN_R_PAREN) {
+
+                // Do result
+                while(current_token.type != token::TOKEN_R_PAREN) {
+
+                    do_node.insert(parse_expression());
+
+                }
+
+            }
+
+            // Skip )
+            advance();
+
+            //Command
+            while(current_token.type != token::TOKEN_R_PAREN) {
+
+                do_node.insert(parse_expression());
+
+            }
+
+            //Skip )
+            advance();
+
+            return do_node;
+
+        }
 
         else if (next_token.value == "delay") {
 
@@ -334,6 +392,47 @@ treenode parser::parse_expression(){
     }
 
     else{ return treenode("NOT VALID TOKEN. '" + current_token.value + "'"); }
+
+}
+
+treenode parser::parse_iteration_spec(){
+
+    //〈iteration spec〉 −→ (〈variable〉 〈init〉 〈step〉)
+    // | (〈variable〉 〈init〉
+
+    if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Iteration spec."); }
+
+    // Skip (
+    advance();
+
+    treenode is = treenode("iteration-spec");
+
+
+    tokenIsVariable(current_token) ? is.insert(current_token.value) : is.insert(treenode("Error. Iteration spec"));
+
+    advance();
+
+    // init
+    is.insert(parse_expression());
+
+    advance();
+
+    if (next_token.type == token::TOKEN_R_PAREN) {
+
+        return is;
+
+    }
+
+    else {
+
+        // step
+        is.insert(parse_expression());
+
+        advance();
+
+        return is;
+
+    }
 
 }
 

@@ -50,6 +50,7 @@ class parser{
         treenode parse_cond_clause();
         treenode parse_case_clause();
         treenode parse_transformer_spec();
+        treenode parse_iteration_spec();
 };
 
 #endif 
