@@ -194,6 +194,7 @@ lexer::~lexer(){
 }
  
 bool lexer::isIdentifier(char c){
+    
     const std::string specialInitial = "!$%&*/:<=>?^_~";
     return isalpha(c) || specialInitial.find(c) != std::string::npos;
 
@@ -320,7 +321,6 @@ std::string lexer::parseNumber(int &pos){
         number += current_char;
         pos++;
         current_char = charVec->at(pos);
-
 
     }
 

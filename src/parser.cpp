@@ -220,18 +220,27 @@ treenode parser::parse_expression(){
 
         }
 
-        else if (next_token.value == "let") {
+        else if (next_token.value == "let" || 
+                 next_token.value == "let*" ||
+                 next_token.value == "letrec") {
 
-            // Skip ( let
+            // Skip (
             advance();
-            advance();
+
+            // let or let* or letrec
+            treenode let = treenode(current_token.val);
+
+            // (let 〈variable〉 (〈binding spec〉*) 〈body〉)
+            if (current_token.val == "let" && tokenIsVariable(next_token)) {
+                let.insert(next_token);
+                advance();
+                advance();
+            }
 
             if (current_token.type != token::TOKEN_L_PAREN) { return treenode("Error. Let."); }
 
             // Skip (
             advance();
-
-            treenode let = treenode("let");
 
             while (current_token.type != token::TOKEN_R_PAREN) {
                 
@@ -260,10 +269,6 @@ treenode parser::parse_expression(){
             return let;
 
         }
-
-        else if (next_token.value == "let*") {}
-
-        else if (next_token.value == "letrec") {}
 
         else if (next_token.value == "begin") {
 
