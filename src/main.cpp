@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lexer.h"
 #include "parser.h"
+#include "treenode.h"
 
 int main(int argc, char *argv[]){
 
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]){
     lexer *l = new lexer(file);
     parser *p = new parser(l);
 
-    p->parse();
+    treenode ast = p->parse();
 
     delete l;
     delete p;

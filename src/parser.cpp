@@ -306,7 +306,7 @@ treenode parser::parse_expression(){
 
             while(current_token.type != token::TOKEN_R_PAREN) {
 
-                do_node.insert(parse_iteration_spec);
+                do_node.insert(parse_iteration_spec());
                 advance();
 
             }
@@ -371,7 +371,7 @@ treenode parser::parse_expression(){
         else if (next_token.value == "quasiquote") {}
 
         //〈macro use〉 −→ (〈keyword〉 〈datum〉*)
-        else if (next_token.type == token::TOKEN_IDENTIFIER) { return parse_macro_use(); }
+        else if (next_token.type == token::TOKEN_IDENTIFIER && !tokenIsVariable(next_token)) { return parse_macro_use(); }
 
         else {
 
