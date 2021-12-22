@@ -2,6 +2,8 @@
 #define token_h_guard
 #include <string>
 
+#include "position.h"
+
 struct token{
 
     enum token_type{
@@ -27,6 +29,8 @@ struct token{
 
     token(token_type _t, std::string _value);
     token();
+
+    Position p;
 
 };
 
