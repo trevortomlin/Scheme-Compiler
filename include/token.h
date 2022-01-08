@@ -1,7 +1,7 @@
 #ifndef token_h_guard
 #define token_h_guard
-#include <string>
 
+#include <string>
 #include "position.h"
 
 struct token{
@@ -28,6 +28,7 @@ struct token{
     void operator=(token t);
 
     token(token_type _t, std::string _value);
+    token(token_type _t, std::string _value, Position _p);
     token();
 
     Position p;

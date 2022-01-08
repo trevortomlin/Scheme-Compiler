@@ -5,16 +5,12 @@
 #include <string>
 #include <algorithm>
 
-#include "position.h"
-
 struct treenode{
 
     std::string value;
     std::vector<treenode> children;
 
     treenode(std::string v);
-
-    Position p;
 
     void insert(treenode child);
     void delete_node(treenode child);

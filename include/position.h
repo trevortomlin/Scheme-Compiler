@@ -4,7 +4,10 @@
 struct Position {
 
     int charNum;
-    int lineNun;
+    int lineNum;
+
+    Position();
+    Position(int c, int l);
 
 };
 

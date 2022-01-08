@@ -13,6 +13,7 @@ class lexer{
         std::vector<char> *charVec = new std::vector<char>;
         char c;
         int pos = 0;
+        int line = 0;
 
         lexer(const char *file);
         token advance();

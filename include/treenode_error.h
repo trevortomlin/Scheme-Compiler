@@ -6,9 +6,13 @@
 
 struct treenode_error : treenode {
 
-    value = "Error";
+    std::string value = "Error";
 
     std::string errorMessage;
+
+    treenode_error(std::string v);
+
+    Position p;
 
 };
 
