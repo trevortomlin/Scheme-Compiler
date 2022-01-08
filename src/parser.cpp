@@ -15,7 +15,7 @@ treenode parser::parse(){
         advance();
     }
 
-    std::cout << "\r\nPrint Tree:" << std::endl;
+    std::cout << "\r\nAbstract Syntax Tree:" << std::endl;
     treenode::printTree("", root);
 
     return root;
@@ -26,12 +26,18 @@ void parser::advance(){
     current_token = next_token;
     next_token = lex->advance();
 
+    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << "\n";
+
 }
 
 parser::parser(lexer *_lex) : lex(_lex) {
 
+    std::cout << "Tokens:" << '\n';
+
     current_token = lex->advance();
     next_token = lex->advance();
+
+    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << "\n";
 
     // Might want to move this to another location eventually.
 

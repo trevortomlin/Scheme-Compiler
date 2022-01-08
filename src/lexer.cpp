@@ -41,17 +41,17 @@ token lexer::advance(){
             case 0: {
 
                 if (isIdentifier(c)) {state = 1; break;}
-                else if (isspace(c)) {pos++; if (c=='\n') { line++; } break;}
+                else if (isspace(c)) {pos++; if (c=='\n') { line++; charNum=0; } break;}
                 else if (isdigit(c)){state = 4; break;}
                 else if (c == '.' || c == '+' || c == '-'){state = 6; break;}
                 else if (c == ';') {skipComment(pos); break;}
                 else if (c == '"') {state = 2; break;}
                 else if (c == '#') {state = 3; break;}
-                else if (c == '(') {pos++; return token(token::TOKEN_L_PAREN, std::string(1, c), Position(pos, line));}
-                else if (c == ')') {pos++; return token(token::TOKEN_R_PAREN, std::string(1, c), Position(pos, line));}
-                else if (c == '\'') {pos++; return token(token::TOKEN_SINGLE_QUOTE, std::string(1, c), Position(pos, line));}
+                else if (c == '(') {pos++; charNum++; return token(token::TOKEN_L_PAREN, std::string(1, c), Position(charNum, line));}
+                else if (c == ')') {pos++; charNum++; return token(token::TOKEN_R_PAREN, std::string(1, c), Position(charNum, line));}
+                else if (c == '\'') {pos++; charNum++; return token(token::TOKEN_SINGLE_QUOTE, std::string(1, c), Position(charNum, line));}
                 else if (c == ',') {state = 5; break;}
-                else if (c == '`') {pos++; return token(token::TOKEN_BACK_QUOTE, std::string(1, c), Position(pos, line));}
+                else if (c == '`') {pos++; charNum++; return token(token::TOKEN_BACK_QUOTE, std::string(1, c), Position(charNum, line));}
 
                 break;
             }
@@ -59,14 +59,16 @@ token lexer::advance(){
             case 1: {
 
                 std::string id = parseIdentifier(pos);
-                return token(token::TOKEN_IDENTIFIER, id, Position(pos, line));
+                charNum++;
+                return token(token::TOKEN_IDENTIFIER, id, Position(charNum, line));
                 break;
             }
             // String State
             case 2: {
                 
                 std::string str = parseString(pos);
-                return token(token::TOKEN_STRING, str, Position(pos, line));
+                charNum++;
+                return token(token::TOKEN_STRING, str, Position(charNum, line));
                 break;
 
             }
@@ -79,12 +81,11 @@ token lexer::advance(){
                 switch (next_char){
 
                     case 't':
-                    case 'f': pos+=2; return token(token::TOKEN_BOOLEAN, "#" + std::string(1, next_char), Position(pos, line)); break;
+                    case 'f': pos+=2; charNum++; return token(token::TOKEN_BOOLEAN, "#" + std::string(1, next_char), Position(charNum, line)); break;
 
-                    case '\\': pos += 2; return token(token::TOKEN_CHARACTER, parseCharacter(pos), Position(pos, line)); break;
+                    case '\\': pos += 2; charNum++; return token(token::TOKEN_CHARACTER, parseCharacter(pos), Position(charNum, line)); break;
                     
-                    case '(': pos += 2; return token(token::TOKEN_VECTOR_CONSTANT, "#" + std::string(1, next_char), Position(pos, line)); break;
-
+                    case '(': pos += 2; charNum++; return token(token::TOKEN_VECTOR_CONSTANT, "#" + std::string(1, next_char), Position(charNum, line)); break;
 
                     // Radix and exactness markers
                     case 'e':
@@ -131,8 +132,8 @@ token lexer::advance(){
 
                 } while (current_char == '#');
 
-
-                return token(token::TOKEN_NUMBER, prefix + parseNumber(pos), Position(pos, line));
+                charNum++;
+                return token(token::TOKEN_NUMBER, prefix + parseNumber(pos), Position(charNum, line));
 
             }
 
@@ -141,8 +142,8 @@ token lexer::advance(){
             
                 char next_char = charVec->at(pos+1);
 
-                if (next_char == '@'){pos +=2; return token(token::TOKEN_COMMA_AT, std::string(1, c) + std::string(1, next_char), Position(pos, line));}
-                else {pos +=2; return token(token::TOKEN_COMMA, std::string(1, c), Position(pos, line));}
+                if (next_char == '@'){pos +=2; charNum++; return token(token::TOKEN_COMMA_AT, std::string(1, c) + std::string(1, next_char), Position(charNum, line));}
+                else {pos +=2; charNum++; return token(token::TOKEN_COMMA, std::string(1, c), Position(charNum, line));}
             
             }
 
@@ -153,16 +154,17 @@ token lexer::advance(){
 
                 if (c == '.'){
 
-                    if (isDelimiter(next_char) && next_char != '.'){pos++; return token(token::TOKEN_PERIOD, std::string(1, c), Position(pos, line));}
+                    if (isDelimiter(next_char) && next_char != '.'){pos++; return token(token::TOKEN_PERIOD, std::string(1, c), Position(charNum, line));}
                     else if (charVec->at(pos + 2) == '.'){
                         pos+=3;
-                        return token(token::TOKEN_IDENTIFIER, "...", Position(pos, line));     
+                        charNum++;
+                        return token(token::TOKEN_IDENTIFIER, "...", Position(charNum, line));     
 
                     }
 
                 }
 
-                if (next_char == ' ') {pos++; return token(token::TOKEN_IDENTIFIER, std::string(1, c), Position(pos, line));}
+                if (next_char == ' ') {pos++; charNum++; return token(token::TOKEN_IDENTIFIER, std::string(1, c), Position(charNum, line));}
 
                 else {state = 4;}
 
@@ -173,7 +175,8 @@ token lexer::advance(){
     
     }
 
-    return token(token::TOKEN_EOF, "EOF", Position(pos, line));
+    charNum++;
+    return token(token::TOKEN_EOF, "EOF", Position(charNum, line));
 
 }
 

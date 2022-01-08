@@ -8,6 +8,7 @@ struct Position {
 
     Position();
     Position(int c, int l);
+    Position(const Position &obj);
 
 };
 

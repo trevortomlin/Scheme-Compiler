@@ -17,11 +17,11 @@ token::token(token_type _t, std::string _value){
     
 }
 
-token::token(token_type _t, std::string _value, Position _p){
+token::token(token_type _t, std::string _value, Position _p) : p(_p) {
 
     type = _t;
     value = _value;
-    p = _p;
+    //p = Position(_c, _l);
 
 }
 
@@ -29,5 +29,6 @@ void token::operator=(token t){
 
     type = t.type;
     value = t.value;
+    p = t.p;
 
 }
