@@ -6,6 +6,22 @@
 
 treenode root("root");
 
+void parser::print_errors(treenode t) {
+
+    std::cout << t.value << std::endl;
+
+    if (t.children.size() != 0) {
+
+        for (auto &child : t.children) {
+            
+            parser::print_errors(child);    
+
+        }
+
+    }
+
+}
+
 treenode parser::check_tree(treenode t) {
 
     treenode error("Errors");
@@ -54,6 +70,8 @@ treenode parser::parse(){
     std::cout << "\r\nAbstract Syntax Tree:" << std::endl;
     treenode::printTree("", root);
 
+    std::cout << "\n";
+
     return parser::check_tree(root);
 
 }
@@ -63,7 +81,7 @@ void parser::advance(){
     current_token = next_token;
     next_token = lex->advance();
 
-    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << "\n";
+    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << ".\n";
 
 }
 
@@ -434,7 +452,7 @@ treenode parser::parse_expression(){
 
     }
 
-    else return treenode("NOT VALID TOKEN. '" + current_token.value + "' " + "At line " + std::to_string(current_token.p.lineNum) + " char " + std::to_string(current_token.p.charNum)); 
+    else return treenode("NOT VALID TOKEN. '" + current_token.value + "' " + "At line " + std::to_string(current_token.p.lineNum) + " char " + std::to_string(current_token.p.charNum) + "."); 
 
 }
 

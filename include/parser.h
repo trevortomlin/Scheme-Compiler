@@ -17,6 +17,7 @@ class parser{
 
         treenode parse();
 
+        void print_errors(treenode t);
 
     private:
      
