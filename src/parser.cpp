@@ -1,8 +1,44 @@
 #include "parser.h"
 #include "treenode.h"
 #include "token.h"
+#include <memory>
+#include <queue>
 
 treenode root("root");
+
+treenode parser::check_tree(treenode t) {
+
+    treenode error("Errors");
+
+    // bfs looking for errors.
+
+    std::queue<treenode> q;
+
+    q.push(t);
+
+    while (!q.empty()) {
+
+        treenode s = q.front();
+        q.pop();
+
+        //std::cout << s.value.substr(0, 16) << '\n';
+
+        if (s.value.substr(0, 16) == "NOT VALID TOKEN.") error.insert(s);
+
+        for (auto &child : s.children) {
+
+            q.push(child);
+
+        }
+
+    }
+
+    // There are no errors
+    if (error.children.empty()) return t;
+
+    return error;
+
+}
 
 treenode parser::parse(){
 
@@ -18,7 +54,8 @@ treenode parser::parse(){
     std::cout << "\r\nAbstract Syntax Tree:" << std::endl;
     treenode::printTree("", root);
 
-    return root;
+    return parser::check_tree(root);
+
 }
 
 void parser::advance(){
@@ -397,7 +434,7 @@ treenode parser::parse_expression(){
 
     }
 
-    else{ return treenode("NOT VALID TOKEN. '" + current_token.value + "'"); }
+    else return treenode("NOT VALID TOKEN. '" + current_token.value + "' " + "At line " + std::to_string(current_token.p.lineNum) + " char " + std::to_string(current_token.p.charNum)); 
 
 }
 
@@ -1142,8 +1179,6 @@ treenode parser::parse_datum(token t) {
     // Compound Datum
     else {
 
-        //treenode node = treenode(current_token.value);
-        //node.insert(parse_compound_datum(t));
         treenode node = treenode(parse_compound_datum(t));
         return node;
 
@@ -1157,9 +1192,6 @@ treenode parser::parse_compound_datum(token t) {
     if (t.type == token::TOKEN_VECTOR_CONSTANT) {
 
         treenode vector = treenode("vector");
-
-        // No datum
-        //if (next_token.type = token::TOKEN_R_PAREN) { return vector; }
 
         while (next_token.type != token::TOKEN_R_PAREN) {
 

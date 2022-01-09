@@ -18,7 +18,7 @@ lexer::lexer(const char *file){
 
         current_char = src_code.get();
 
-         charVec->push_back(current_char);
+        charVec->push_back(current_char);
 
         if (current_char == EOF) break;
 

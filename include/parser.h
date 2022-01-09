@@ -19,7 +19,7 @@ class parser{
 
 
     private:
-
+     
         lexer *lex;
 
         token current_token, next_token;
@@ -27,6 +27,8 @@ class parser{
         std::set<std::string> variables;
 
         void advance();
+
+        treenode check_tree(treenode t);
 
         treenode parse_define();
         treenode parse_define_formals();

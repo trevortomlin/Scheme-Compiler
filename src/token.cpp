@@ -21,7 +21,6 @@ token::token(token_type _t, std::string _value, Position _p) : p(_p) {
 
     type = _t;
     value = _value;
-    //p = Position(_c, _l);
 
 }
 

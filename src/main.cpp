@@ -19,6 +19,8 @@ int main(int argc, char *argv[]){
 
     treenode ast = p->parse();
 
+    if (ast.value == "Errors") { std::cout << "Errors"; }
+
     delete l;
     delete p;
 
