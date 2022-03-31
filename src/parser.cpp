@@ -36,9 +36,7 @@ treenode parser::check_tree(treenode t) {
 
         treenode s = q.front();
         q.pop();
-
-        //std::cout << s.value.substr(0, 16) << '\n';
-
+        
         if (s.value.substr(0, 16) == "NOT VALID TOKEN.") error.insert(s);
 
         for (auto &child : s.children) {
@@ -92,7 +90,7 @@ parser::parser(lexer *_lex) : lex(_lex) {
     current_token = lex->advance();
     next_token = lex->advance();
 
-    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << "\n";
+    std::cout << current_token.value << " Character: " << current_token.p.charNum << " Line: " << current_token.p.lineNum << ".\n";
 
     // Might want to move this to another location eventually.
 

@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "treenode.h"
+#include "codegenerator.h"
 
 int main(int argc, char *argv[]){
 
@@ -20,6 +21,8 @@ int main(int argc, char *argv[]){
     treenode ast = p->parse();
 
     if (ast.value == "Errors") p->print_errors(ast);
+
+    CodeGenerator *cg = new CodeGenerator(ast);
 
     delete l;
     delete p;
